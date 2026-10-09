@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Nuevo bug{% endblock %}
+{% block content %}
+<h1>Nuevo reporte de bug</h1>
+<p class="sub">Pegá el mensaje tal cual llegó (chat, mail, audio transcripto). No lo corrijas: el texto original es la fuente
+  contra la que se verifica cada dato.</p>
+<form class="card" method="post" data-busy>
+  <label for="texto">Mensaje original</label>
+  <textarea id="texto" name="texto" class="big" required placeholder="che no puedo entrar con mi contraseña que tiene ñ…"></textarea>
+  <p><button class="btn" type="submit">{{ "Guardar y analizar" if llm else "Guardar" }}</button><span class="busy">Analizando…</span></p>
+</form>
+{% endblock %}

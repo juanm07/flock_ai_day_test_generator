@@ -1,0 +1,100 @@
+# Suite de pruebas — {{ fs.story_id }}: {{ fs.title }}
+
+> Generada por `tbg` (modelo `{{ fs.model_hash }}`). Diseño de casos, IDs, prioridades, cobertura y auto-revisión
+> calculados por código; redacción de pasos por el agente, validada por `tbg validate`.
+
+## 1. Resumen del análisis
+
+- **Rol**: {{ model.role }}
+- **Funcionalidad**: {{ model.want }}
+- **Objetivo de negocio**: {{ model.so_that or "[PENDIENTE: la HU no declara el 'para …']" }}
+- **Módulo**: {{ fs.module }}
+- **Criterios de aceptación:**
+{% for ac in model.acceptance_criteria %}  - **{{ ac.id }}**: {{ ac.text }}
+{% endfor %}- **Parámetros modelados (Category-Partition)**: {% for p in model.parameters %}`{{ p.name }}` ({{ p.choices | length }} particiones){{ ", " if not loop.last }}{% endfor %}
+- **Tags de riesgo**: {{ fs.feature_tags | join(", ") }}
+- **Lint de la HU**: {% if fs.findings %}{{ fs.findings | length }} hallazgo(s) — ver sección 8.{% else %}sin smells ni problemas de formato detectados.{% endif %}
+- **Modo**: {{ fs.mode }}.{% if fs.mode == "analisis" %} Hay lagunas BLOQUEANTES: no se generan casos hasta resolverlas.{% endif %}
+
+## 2. Preguntas para el PO
+{% for q in questions %}
+**{{ q.pid }}. [{{ q.gap.category }}] {{ q.gap.question }}**{% if q.gap.gap_class == "BLOQUEANTE" %} — **BLOQUEANTE**{% endif %}
+- **Por qué importa**: {{ q.gap.why }}
+- **Default propuesto**: {{ q.gap.default }}
+{% else %}
+Sin preguntas abiertas.
+{% endfor %}{% if resolved %}
+**Lagunas ya resueltas** (no se preguntan): {% for g in resolved %}`{{ g.id }}` — {{ g.answer }}{{ "; " if not loop.last }}{% endfor %}
+{% endif %}
+## 3. Casos de prueba
+{% for c in cases %}
+### {{ c.frame.case_id }} — {{ c.draft.title }}
+
+| Campo | Valor |
+|---|---|
+| **Título** | {{ c.draft.title }} |
+| **Módulo** | {{ fs.module }} |
+| **Origen** | {% if c.frame.ac_refs %}{{ fs.story_id }} · {{ c.frame.ac_refs | join(", ") }}{% else %}Exploratorio{% endif %} |
+| **Tipo** | {{ c.frame.type }}{% if c.frame.exploratory %} — **exploratorio**{% endif %}{% if c.frame.smoke %} · Humo{% endif %} |
+| **Prioridad** | {{ c.frame.priority }} |
+| **Precondiciones** | {{ c.draft.preconditions }} |
+| **Datos de prueba** | {% for k, v in c.frame.data.items() %}`{{ k }}`: {{ v }}{{ " · " if not loop.last }}{% else %}—{% endfor %} |
+
+**Pasos y resultado esperado**
+
+| # | Acción | Resultado esperado |
+|---|--------|--------------------|
+{% for s in c.draft.steps %}| {{ loop.index }} | {{ s.action }} | {{ s.expected }} |
+{% endfor %}
+| Campo | Valor |
+|---|---|
+| **Evidencia sugerida** | {{ c.draft.evidence }} |
+| **Estado** | Pendiente |
+| **Notas** | {{ c.draft.notes }}{% for s in c.frame.supuestos %} `[SUPUESTO: {{ s }}]`{% endfor %} _Técnica: {{ c.frame.origin }}._ |
+{% endfor %}
+## 4. Priorización por riesgo
+
+| Caso | Probabilidad | Impacto | Prioridad | Justificación |
+|---|---|---|---|---|
+{% for f in fs.frames %}| {{ f.case_id }} | {{ f.probability }} | {{ f.impact }} | {{ f.priority }} | {{ f.risk_reason }} |
+{% endfor %}
+**Orden de ejecución sugerido:** {{ order | join(" → ") }}
+
+**Subset de humo:** {{ smoke | join(", ") or "—" }}
+
+## 5. Matriz de cobertura
+
+| CA | Descripción | Casos que la cubren | Estado |
+|---|---|---|---|
+{% for r in fs.coverage.acceptance %}| {{ r.ac_id }} | {{ r.text }} | {{ r.case_ids | join(", ") or "—" }} | {% if r.covered %}✓ Cubierta{% else %}✗ {{ r.reason }}{% endif %} |
+{% endfor %}
+**Cobertura de CAs: {{ fs.coverage.acceptance | selectattr("covered") | list | length }}/{{ fs.coverage.acceptance | length }} ({{ fs.coverage.ac_percent }}%).**
+Cobertura 2-wise de particiones válidas: {{ fs.coverage.pairs_covered }}/{{ fs.coverage.pairs_total }} pares ({{ fs.coverage.pairs_percent }}%).
+Cobertura de valores límite: {{ fs.coverage.boundaries_covered }}/{{ fs.coverage.boundaries_total }} ({{ fs.coverage.boundaries_percent }}%){% if not fs.coverage.boundaries_total %} — ningún parámetro tiene límites definidos aún (ver preguntas sobre límites){% endif %}.
+
+## 6. Supuestos asumidos
+{% for s, ids in supuestos %}
+{{ loop.index }}. `[SUPUESTO: {{ s }}]` — en {{ ids | join(", ") }}.{% else %}
+Ninguno.{% endfor %}{% for g in silent %}
+{{ supuestos | length + loop.index }}. `[SUPUESTO: {{ g.default }}]` — laguna menor `{{ g.id }}` no preguntada (tope de preguntas).{% endfor %}
+
+## 7. Auto-revisión (`tbg validate`)
+
+| Ítem | Crítico | Resultado |
+|---|---|---|
+{% for c in report.checks %}| {{ c.id }} — {{ c.name }} | {{ "Sí" if c.critical else "No" }} | {{ "✓" if c.passed else "✗" }}{% if c.details %} {{ c.details | join("; ") }}{% endif %} |
+{% endfor %}
+**Gate: {{ "APROBADO" if report.ok else "FALLIDO — no entregar" }}.**
+
+## 8. Trazabilidad técnica
+{% if fs.findings %}
+**Lint de la HU** (Requirements Smells — Femmer et al. 2017; Quality User Story — Lucassen et al. 2016):
+{% for f in fs.findings %}
+- `{{ f.rule }}` en {{ f.location }}: «{{ f.text }}» — {{ f.message }}{% endfor %}
+{% endif %}
+**Técnicas de diseño por caso:** {% for k, v in techniques.items() %}{{ k }}: {{ v }}{{ " · " if not loop.last }}{% endfor %}.
+
+- `ac-happy-path` / `each-choice` / `pairwise`: Category-Partition (Ostrand & Balcer 1988) + cobertura 2-wise (Kuhn et al. 2004).
+- `error-choice`: elecciones `[error]` de TSL, un caso cada una sin combinar.
+- `bva`: análisis de valores límite (mín-1, mín, mín+1, máx-1, máx, máx+1).
+- `rule:<id>`: heurística de `rules/gaps.yaml`.

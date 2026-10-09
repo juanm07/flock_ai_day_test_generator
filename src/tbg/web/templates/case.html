@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ frame.case_id }}{% endblock %}
+{% block content %}
+<p><a href="/hu/{{ sid }}#casos">← {{ sid }}</a></p>
+<h1>{{ frame.case_id }} — {{ draft.title if draft else frame.title_hint }}</h1>
+<p class="sub"><span class="chip">{{ frame.type }}</span><span class="chip">Prioridad {{ frame.priority }}</span>
+  {% for a in frame.ac_refs %}<span class="chip">{{ a }}</span>{% endfor %}
+  {% if frame.smoke %}<span class="chip accent">humo</span>{% endif %}{% if frame.exploratory %}<span class="chip">exploratorio</span>{% endif %}</p>
+
+<div class="grid2">
+  <div class="card">
+    <h2>Qué hay que probar (diseño fijo)</h2>
+    <p class="small muted">Esto lo decidieron las reglas: no se edita acá. Para cambiarlo, respondé preguntas o volvé a analizar la historia.</p>
+    {% if frame.data %}<h3>Datos de prueba</h3><table>{% for k, v in frame.data.items() %}<tr><td class="mono">{{ k }}</td><td>{{ v }}</td></tr>{% endfor %}</table>{% endif %}
+    {% if frame.examples %}<h3>Valores límite</h3><table><tr><th>Límite</th><th>Medida</th><th>Esperado</th></tr>
+      {% for e in frame.examples %}<tr><td>{{ e.etiqueta }}</td><td>{{ e.medida }}</td><td><span class="chip {{ 'ok' if e.resultado == 'aceptado' else 'bad' }}">{{ e.resultado }}</span></td></tr>{% endfor %}</table>{% endif %}
+    {% if frame.expected_hints %}<h3>Lo que se espera</h3><ul class="small">{% for e in frame.expected_hints %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+    {% if frame.supuestos %}<h3>Supuestos (sin confirmar por el PO)</h3><ul class="small">{% for s in frame.supuestos %}<li>{{ s }}</li>{% endfor %}</ul>{% endif %}
+    <h3>Por qué esta prioridad</h3><p class="small">{{ frame.risk_reason }}</p>
+    <p class="small muted">Técnica: {{ frame.origin }} · id estable {{ frame.frame_id }}</p>
+  </div>
+
+  <form class="card" method="post">
+    <h2>Redacción {% if not draft %}<span class="chip bad">sin redactar</span>{% endif %}</h2>
+    {% if issues %}<div class="flash error small">{% for i in issues %}{{ i }}<br>{% endfor %}</div>{% endif %}
+    <label>Título</label><input type="text" name="title" value="{{ draft.title if draft else 'Verificar que ' }}" required>
+    <label>Precondiciones</label><textarea name="preconditions">{{ draft.preconditions if draft else '' }}</textarea>
+    <label>Pasos (una acción por paso; resultado observable)</label>
+    <table id="steps"><tr><th>#</th><th>Acción</th><th>Resultado esperado</th></tr>
+      {% set steps = draft.steps if draft else [] %}
+      {% for s in steps + [none, none] %}
+      <tr><td>{{ loop.index }}</td><td><textarea name="action">{{ s.action if s else '' }}</textarea></td>
+          <td><textarea name="expected">{{ s.expected if s else '' }}</textarea></td></tr>
+      {% endfor %}
+    </table>
+    <label>Evidencia sugerida</label><input type="text" name="evidence" value="{{ draft.evidence if draft else '' }}">
+    <label>Notas</label><textarea name="notes">{{ draft.notes if draft else '' }}</textarea>
+    <p><button class="btn" type="submit">Guardar y validar</button></p>
+    <p class="small muted">Si el diseño tiene supuestos, marcá el resultado afectado con [SUPUESTO: …]. Usá los datos de la izquierda tal cual.</p>
+  </form>
+</div>
+{% endblock %}

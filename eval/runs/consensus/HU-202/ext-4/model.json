@@ -1,0 +1,77 @@
+{
+  "story_id": "HU-202",
+  "title": "Exportación de movimientos de cuenta",
+  "module": "Movimientos",
+  "role": "cliente de home banking",
+  "want": "exportar los movimientos de mi cuenta en un rango de fechas",
+  "so_that": "conciliarlos con mi sistema contable",
+  "feature_tags": ["money", "export", "ui", "dates"],
+  "acceptance_criteria": [
+    {"id": "CA-1", "text": "Desde \"Movimientos\", el cliente selecciona una cuenta, un rango de fechas (desde/hasta) y un formato (CSV, XLSX o PDF) y toca \"Exportar\"."},
+    {"id": "CA-2", "text": "El sistema genera el archivo rápidamente con los movimientos del período, incluyendo fecha, descripción, importe y saldo."},
+    {"id": "CA-3", "text": "El archivo se descarga con el nombre `movimientos_<cuenta>_<desde>_<hasta>.<ext>`."},
+    {"id": "CA-4", "text": "Si el rango no tiene movimientos, el sistema muestra un mensaje adecuado."}
+  ],
+  "parameters": [
+    {
+      "name": "cuenta",
+      "description": "Cuenta del cliente cuyos movimientos se exportan; su moneda puede ser ARS o USD.",
+      "kind": "enum",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "cuenta_ars", "description": "Cuenta en pesos (ARS).", "kind": "valid", "example": "Cuenta corriente ARS 0012-3456/7"},
+        {"name": "cuenta_usd", "description": "Cuenta en dólares (USD).", "kind": "valid", "example": "Caja de ahorro USD 0045-6789/1"},
+        {"name": "sin_seleccionar", "description": "No se selecciona ninguna cuenta.", "kind": "invalid", "example": "", "assumed": true}
+      ]
+    },
+    {
+      "name": "fecha_desde",
+      "description": "Fecha de inicio del rango de movimientos a exportar.",
+      "kind": "date",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "fecha_valida", "description": "Fecha válida del pasado.", "kind": "valid", "example": "01/09/2026"},
+        {"name": "vacio", "description": "Fecha desde sin completar.", "kind": "invalid", "example": "", "assumed": true},
+        {"name": "formato_invalido", "description": "Fecha con formato inválido.", "kind": "invalid", "example": "31/02/2026", "assumed": true},
+        {"name": "futura", "description": "Fecha posterior a hoy.", "kind": "invalid", "example": "01/01/2030", "assumed": true}
+      ]
+    },
+    {
+      "name": "fecha_hasta",
+      "description": "Fecha de fin del rango de movimientos a exportar.",
+      "kind": "date",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "fecha_valida", "description": "Fecha válida igual o posterior a fecha_desde.", "kind": "valid", "example": "30/09/2026"},
+        {"name": "vacio", "description": "Fecha hasta sin completar.", "kind": "invalid", "example": "", "assumed": true},
+        {"name": "formato_invalido", "description": "Fecha con formato inválido.", "kind": "invalid", "example": "31/02/2026", "assumed": true},
+        {"name": "futura", "description": "Fecha posterior a hoy.", "kind": "invalid", "example": "01/01/2030", "assumed": true},
+        {"name": "anterior_a_fecha_desde", "description": "Fecha hasta anterior a fecha_desde.", "kind": "invalid", "example": "(anterior a la definida en fecha_desde)", "assumed": true}
+      ]
+    },
+    {
+      "name": "formato",
+      "description": "Formato del archivo exportado (CSV, XLSX o PDF).",
+      "kind": "enum",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "csv", "description": "Exportación en CSV.", "kind": "valid", "example": "CSV"},
+        {"name": "xlsx", "description": "Exportación en XLSX.", "kind": "valid", "example": "XLSX"},
+        {"name": "pdf", "description": "Exportación en PDF.", "kind": "valid", "example": "PDF"},
+        {"name": "sin_seleccionar", "description": "No se selecciona ningún formato.", "kind": "invalid", "example": "", "assumed": true}
+      ]
+    },
+    {
+      "name": "movimientos_en_rango",
+      "description": "Estado de los datos: si la cuenta tiene movimientos en el rango de fechas elegido.",
+      "kind": "state",
+      "ac_refs": ["CA-2", "CA-4"],
+      "choices": [
+        {"name": "con_movimientos", "description": "El rango contiene movimientos.", "kind": "valid", "example": "Rango con varios movimientos"},
+        {"name": "sin_movimientos", "description": "El rango no contiene movimientos.", "kind": "invalid", "example": "Rango sin movimientos", "expected": "El sistema muestra un mensaje adecuado.", "quote": "Si el rango no tiene movimientos, el sistema muestra un mensaje adecuado."}
+      ]
+    }
+  ],
+  "constraints": [],
+  "answers": {}
+}

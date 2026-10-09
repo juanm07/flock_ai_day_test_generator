@@ -1,0 +1,63 @@
+# Clasificación de bugs — versión ejecutable de docs/lineamientos/estructuras/taxonomia-severidad-prioridad.md.
+# El LLM solo responde features booleanas CON CITA del reporte (o null si el reporte no lo dice).
+# El código decide. Si hay features en null que podrían cambiar el resultado, la clasificación es
+# "preliminar" y se informa qué la condiciona (se evalúan todas las combinaciones de los null).
+
+# Severidad: primera regla que matchea (todas las condiciones deben cumplirse). Orden = precedencia.
+severity_rules:
+  - id: data_loss
+    when: { data_loss: true }
+    severity: S1
+    reason: "Corrupción o pérdida de datos es siempre S1."
+  - id: critical_flow_blocked_for_all
+    when: { blocks_critical_flow: true, workaround_exists: false, affects_subset_only: false }
+    severity: S1
+    reason: "Bloquea un flujo crítico para todos los usuarios y sin workaround."
+  - id: critical_flow_degraded
+    when: { blocks_critical_flow: true }
+    severity: S2
+    reason: "Funcionalidad clave degradada: hay workaround o afecta a un subconjunto de usuarios."
+  - id: cosmetic
+    when: { cosmetic_only: true }
+    severity: S4
+    reason: "Cosmético, sin impacto funcional."
+  - id: default
+    when: {}
+    severity: S3
+    reason: "Funcionalidad secundaria afectada o con workaround simple."
+
+# Pisos: la severidad nunca baja de este nivel si la condición se cumple.
+severity_floors:
+  - when: { security: true }
+    min: S2
+    reason: "Un bug de seguridad nunca baja de S2."
+
+# Prioridad: matriz contexto × severidad. Aplican TODAS las filas cuyo contexto se cumple y se toma la más urgente.
+# "default" aplica si ninguna otra. Celdas con rango (P2/P3) en la taxonomía → se toma el más urgente.
+priority_matrix:
+  regression:      { when: { regression: true },      S1: P1, S2: P1, S3: P2, S4: P3 }
+  production:      { when: { in_production: true },   S1: P1, S2: P2, S3: P3, S4: P4 }
+  before_release:  { when: { before_release: true },  S1: P1, S2: P1, S3: P2, S4: P3 }
+  default:         { when: {},                        S1: P1, S2: P2, S3: P3, S4: P4 }
+
+priority_floors:
+  - when: { security: true }
+    max: P2
+    reason: "Bugs de seguridad: prioridad mínima P2."
+
+# Expresiones de incertidumbre del reportero: un hecho citado con estas marcas se informa "a confirmar".
+hedges: ['creo', 'me parece', 'parece', 'supongo', 'capaz', 'tal vez', 'quizás', 'probablemente', 'más o menos',
+         'no me acuerdo', 'algo de', 'algo así', 'seguro es', 'seguro que', 'no sé']
+
+# Información faltante (Bettenburg et al. FSE 2008; Chaparro et al. FSE 2017: OB / EB / S2R).
+missing:
+  steps:          { critical: true,  label: "Pasos para reproducir (S2R)", question: "¿Podés listar paso a paso qué hiciste, desde qué pantalla arrancaste y qué datos usaste?" }
+  observed:       { critical: true,  label: "Resultado observado (OB)",    question: "¿Qué viste exactamente cuando falló?" }
+  expected:       { critical: true,  label: "Resultado esperado (EB)",     question: "¿Qué esperabas que pasara?" }
+  error_text:     { critical: true,  label: "Texto literal del error",     question: "¿Podés copiar el texto exacto del error o mandar una captura?" }
+  app_version:    { critical: true,  label: "Versión/build de la app",     question: "¿Qué versión/build estaba desplegada y hubo un deploy reciente?" }
+  environment:    { critical: true,  label: "Entorno",                     question: "¿En qué entorno pasó (QA, staging, producción)?" }
+  platform:       { critical: true,  label: "Plataforma",                  question: "¿Qué navegador/SO/dispositivo y versión usabas? ¿Probaste en otro?" }
+  evidence:       { critical: false, label: "Evidencia",                   question: "¿Tenés captura, video o log del momento del error?" }
+  frequency:      { critical: false, label: "Frecuencia",                  question: "¿Cuántas veces lo intentaste y en cuántas falló?" }
+  affected_user:  { critical: false, label: "Usuario/rol afectado",        question: "¿Con qué usuario/rol pasó? ¿Le pasa a otros usuarios?" }

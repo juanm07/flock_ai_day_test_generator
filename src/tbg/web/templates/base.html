@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}tbg{% endblock %} · Flock Test & Bug Generator</title>
+<link rel="icon" href="/static/flock-mark-white.svg">
+<link rel="stylesheet" href="/static/tokens.css">
+<link rel="stylesheet" href="/static/app.css">
+<script>
+  // Dark mode del design system: html.dark. Sigue al sistema salvo que el usuario elija otra cosa.
+  (() => {
+    let pref = null;
+    try { pref = localStorage.getItem("tbg-theme"); } catch (e) {}
+    const dark = pref ? pref === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark", dark);
+  })();
+</script>
+</head>
+<body>
+<header class="topbar"><div class="bar">
+  <a class="brand" href="/"><img src="/static/flock-mark-white.svg" alt="Flock"><span><small>Flock · QA</small>Test & Bug Generator</span></a>
+  <nav class="topnav"><a class="light" href="/hu/nueva">+ Nueva HU</a><a class="light" href="/bug/nuevo">+ Nuevo bug</a></nav>
+  <span class="spacer"></span>
+  <a class="light" href="/config">IA: {{ llm_label }}</a>
+  <button class="light" type="button" id="theme" title="Cambiar tema claro/oscuro">◐</button>
+</div></header>
+<main>
+  {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+  {% if ok %}<div class="flash ok">{{ ok }}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<script>
+  // Las operaciones con IA tardan: deshabilitar el botón y mostrar progreso.
+  document.querySelectorAll("form[data-busy]").forEach(f => f.addEventListener("submit", () => {
+    f.classList.add("loading"); f.querySelectorAll("button").forEach(b => b.disabled = true);
+  }));
+  document.getElementById("theme").addEventListener("click", () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    try { localStorage.setItem("tbg-theme", dark ? "dark" : "light"); } catch (e) {}
+  });
+</script>
+</body>
+</html>

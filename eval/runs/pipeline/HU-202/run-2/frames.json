@@ -1,0 +1,1013 @@
+{
+  "story_id": "HU-202",
+  "title": "Exportación de movimientos de cuenta",
+  "module": "Movimientos",
+  "model_hash": "f89a55ebedca",
+  "feature_tags": [
+    "dates",
+    "export",
+    "money",
+    "ui"
+  ],
+  "findings": [
+    {
+      "rule": "smell.subjective_language",
+      "category": "Requirements Smell",
+      "message": "Lenguaje subjetivo: su verificación depende de la opinión de quien prueba.",
+      "text": "adecuado",
+      "location": "CA-4"
+    },
+    {
+      "rule": "smell.ambiguous_adverbs_adjectives",
+      "category": "Requirements Smell",
+      "message": "Adverbios/adjetivos ambiguos: no fijan un umbral verificable.",
+      "text": "rápidamente",
+      "location": "CA-2"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "ac.verifiable.CA-2",
+      "category": "A. Criterios de aceptación",
+      "gap_class": "IMPORTANTE",
+      "question": "En CA-2, «rápidamente» no es verificable: ¿cuál es el resultado/umbral concreto?",
+      "why": "Adverbios/adjetivos ambiguos: no fijan un umbral verificable. Sin umbral, otra persona no puede decir 'pasó' o 'falló'.",
+      "default": "Se prueba de forma exploratoria y se documenta lo observado.",
+      "source": "smell.ambiguous_adverbs_adjectives",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "ac.verifiable.CA-4",
+      "category": "A. Criterios de aceptación",
+      "gap_class": "IMPORTANTE",
+      "question": "En CA-4, «adecuado» no es verificable: ¿cuál es el resultado/umbral concreto?",
+      "why": "Lenguaje subjetivo: su verificación depende de la opinión de quien prueba. Sin umbral, otra persona no puede decir 'pasó' o 'falló'.",
+      "default": "Se prueba de forma exploratoria y se documenta lo observado.",
+      "source": "smell.subjective_language",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "money.idempotency",
+      "category": "G. Concurrencia",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Qué pasa ante doble submit o reintento de la operación? ¿Se garantiza que se ejecute una sola vez?",
+      "why": "En operaciones de dinero, un doble submit genera cobros/movimientos duplicados.",
+      "default": "La operación es idempotente: el segundo submit no genera un segundo movimiento.",
+      "source": "tag:money",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "roles.permissions",
+      "category": "D. Permisos",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Qué roles pueden ejecutar la funcionalidad y cuáles NO? ¿Ve cada usuario solo sus propios datos?",
+      "why": "La autorización se prueba con un rol SIN permiso; sin definición no se puede diseñar ese negativo.",
+      "default": "Solo el titular de la cuenta; otro usuario autenticado recibe 403 y no ve datos ajenos.",
+      "source": "tag:export,money",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "export.volume",
+      "category": "B. Datos",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Qué pasa si no hay datos en el rango y cuál es el volumen máximo exportable?",
+      "why": "Reporte vacío y reporte masivo son los bordes clásicos de un export.",
+      "default": "Sin datos: mensaje 'No hay movimientos para el período' y no se genera archivo; máximo 10.000 filas.",
+      "source": "tag:export",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "dates.range",
+      "category": "B. Datos",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Cuál es el rango de fechas máximo permitido y en qué zona horaria se interpretan las fechas?",
+      "why": "Define bordes del rango (desde > hasta, rango máximo ±1) y errores por zona horaria en los cortes de día.",
+      "default": "Rango máximo de 12 meses, 'desde' ≤ 'hasta', fechas en hora de Argentina (UTC-3).",
+      "source": "tag:dates",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "param.bounds.fecha_desde",
+      "category": "B. Datos",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Cuáles son los límites de «Fecha inicial del rango a exportar» (mínimo/máximo)?",
+      "why": "Sin límites no se pueden calcular los valores de borde (mín-1, mín, máx, máx+1).",
+      "default": "Se prueba con valores típicos; los bordes quedan como exploratorios.",
+      "source": "schema:bounds",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "context.platform_i18n",
+      "category": "J. Contexto",
+      "gap_class": "MENOR",
+      "question": "¿En qué idiomas se muestra/envía el contenido y qué navegadores/dispositivos se soportan?",
+      "why": "Define el alcance de i18n y de compatibilidad.",
+      "default": "Solo español; Chrome, Firefox y Safari desktop + Chrome móvil.",
+      "source": "tag:ui",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "context.a11y",
+      "category": "J. Contexto",
+      "gap_class": "MENOR",
+      "question": "¿El flujo debe ser navegable por teclado / cumplir algún nivel de accesibilidad?",
+      "why": "Es criterio de 'done' en muchos equipos y define casos de accesibilidad.",
+      "default": "Navegable por teclado con foco visible.",
+      "source": "tag:ui",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.cuenta.sin_cuenta",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Cuenta del cliente seleccionada para exportar (define la moneda de los importes)» es «No se selecciona ninguna cuenta»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.fecha_desde.fecha_vacia",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Fecha inicial del rango a exportar» es «Fecha desde sin completar»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.fecha_desde.fecha_posterior_a_hasta",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Fecha inicial del rango a exportar» es «Fecha desde posterior a la fecha hasta (rango invertido)»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.fecha_hasta.fecha_vacia",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Fecha final del rango a exportar» es «Fecha hasta sin completar»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.formato.sin_formato",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Formato del archivo exportado» es «No se selecciona ningún formato»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.generacion_archivo.servicio_caido",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Estado del servicio que genera el archivo» es «El servicio de generación no responde o falla»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    }
+  ],
+  "frames": [
+    {
+      "frame_id": "F-b82224db",
+      "case_id": "CP-001",
+      "type": "Funcional",
+      "title_hint": "Camino feliz de CA-1",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "csv"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "CSV"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "ac-happy-path",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media; humo → Alta",
+      "smoke": true
+    },
+    {
+      "frame_id": "F-8753b104",
+      "case_id": "CP-002",
+      "type": "Funcional",
+      "title_hint": "CA-1 con cuenta=cuenta_usd, formato=xlsx",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_usd",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "xlsx"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en dólares 0010-7654321/9 (USD)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "XLSX"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (USD)"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-36a85c0a",
+      "case_id": "CP-003",
+      "type": "Funcional",
+      "title_hint": "CA-1 con cuenta=cuenta_usd, formato=pdf",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_usd",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "pdf"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en dólares 0010-7654321/9 (USD)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "PDF"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (USD)"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-34a777d1",
+      "case_id": "CP-004",
+      "type": "Funcional",
+      "title_hint": "CA-1 con formato=pdf",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "pdf"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "PDF"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-746d4afd",
+      "case_id": "CP-005",
+      "type": "Funcional",
+      "title_hint": "CA-1 con formato=xlsx",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "xlsx"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "XLSX"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-ce09762c",
+      "case_id": "CP-006",
+      "type": "Funcional",
+      "title_hint": "CA-1 con cuenta=cuenta_usd",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_usd",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "csv"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en dólares 0010-7654321/9 (USD)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "CSV"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (USD)"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-a90199a8",
+      "case_id": "CP-007",
+      "type": "Negativo",
+      "title_hint": "Cuenta del cliente seleccionada para exportar (define la moneda de los importes): No se selecciona ninguna cuenta",
+      "ac_refs": [
+        "CA-1",
+        "CA-2",
+        "CA-3"
+      ],
+      "bindings": {
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "formato": "csv",
+        "movimientos_en_rango": "con_movimientos",
+        "generacion_archivo": "servicio_disponible",
+        "cuenta": "sin_cuenta"
+      },
+      "data": {
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "formato": "CSV",
+        "movimientos_en_rango": "Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026",
+        "generacion_archivo": "Servicio operativo",
+        "cuenta": "'' (vacío)"
+      },
+      "expected_hints": [
+        "El archivo incluye fecha, descripción, importe y saldo de cada movimiento del período"
+      ],
+      "supuestos": [
+        "«No se selecciona ninguna cuenta» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.cuenta.sin_cuenta)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-1b61bc4c",
+      "case_id": "CP-008",
+      "type": "Negativo",
+      "title_hint": "Fecha inicial del rango a exportar: Fecha desde sin completar",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_hasta": "fecha_valida",
+        "formato": "csv",
+        "fecha_desde": "fecha_vacia"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_hasta": "30/09/2026",
+        "formato": "CSV",
+        "fecha_desde": "'' (vacío)"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)"
+      ],
+      "supuestos": [
+        "«Fecha desde sin completar» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.fecha_desde.fecha_vacia)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-ac39a589",
+      "case_id": "CP-009",
+      "type": "Negativo",
+      "title_hint": "Fecha inicial del rango a exportar: Fecha desde posterior a la fecha hasta (rango invertido)",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_hasta": "fecha_valida",
+        "formato": "csv",
+        "fecha_desde": "fecha_posterior_a_hasta"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_hasta": "30/09/2026",
+        "formato": "CSV",
+        "fecha_desde": "30/09/2026 (con hasta 01/09/2026)"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)"
+      ],
+      "supuestos": [
+        "«Fecha desde posterior a la fecha hasta (rango invertido)» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.fecha_desde.fecha_posterior_a_hasta)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-a4cfd537",
+      "case_id": "CP-010",
+      "type": "Negativo",
+      "title_hint": "Fecha final del rango a exportar: Fecha hasta sin completar",
+      "ac_refs": [
+        "CA-1",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_desde": "fecha_valida",
+        "formato": "csv",
+        "fecha_hasta": "fecha_vacia"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_desde": "01/09/2026",
+        "formato": "CSV",
+        "fecha_hasta": "'' (vacío)"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)"
+      ],
+      "supuestos": [
+        "«Fecha hasta sin completar» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.fecha_hasta.fecha_vacia)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-704fd2e8",
+      "case_id": "CP-011",
+      "type": "Negativo",
+      "title_hint": "Formato del archivo exportado: No se selecciona ningún formato",
+      "ac_refs": [
+        "CA-1",
+        "CA-2",
+        "CA-3"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "fecha_desde": "fecha_valida",
+        "fecha_hasta": "fecha_valida",
+        "movimientos_en_rango": "con_movimientos",
+        "generacion_archivo": "servicio_disponible",
+        "formato": "sin_formato"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "fecha_desde": "01/09/2026",
+        "fecha_hasta": "30/09/2026",
+        "movimientos_en_rango": "Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026",
+        "generacion_archivo": "Servicio operativo",
+        "formato": "'' (vacío)"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)",
+        "El archivo incluye fecha, descripción, importe y saldo de cada movimiento del período"
+      ],
+      "supuestos": [
+        "«No se selecciona ningún formato» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.formato.sin_formato)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-3ed7e423",
+      "case_id": "CP-012",
+      "type": "Negativo",
+      "title_hint": "Acceso con un usuario sin permiso o a datos de otra cuenta",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "El acceso es rechazado y no se exponen datos ajenos."
+      ],
+      "supuestos": [
+        "Solo el titular de la cuenta; otro usuario autenticado recibe 403 y no ve datos ajenos. (ver roles.permissions)"
+      ],
+      "exploratory": false,
+      "origin": "rule:roles.permissions",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-ca62321c",
+      "case_id": "CP-013",
+      "type": "Borde",
+      "title_hint": "Exportación sin datos en el período",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "Se informa que no hay datos en lugar de generar un archivo vacío."
+      ],
+      "supuestos": [
+        "Sin datos: mensaje 'No hay movimientos para el período' y no se genera archivo; máximo 10.000 filas. (ver export.volume)"
+      ],
+      "exploratory": false,
+      "origin": "rule:export.volume",
+      "probability": "Alta",
+      "impact": "Medio",
+      "priority": "Alta",
+      "risk_reason": "Prob. Alta (tipo Borde) × Impacto Medio (tipo Borde en funcionalidad crítica) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-22399e44",
+      "case_id": "CP-014",
+      "type": "Excepción",
+      "title_hint": "Doble submit de la operación",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "Se registra una sola operación."
+      ],
+      "supuestos": [
+        "La operación es idempotente: el segundo submit no genera un segundo movimiento. (ver money.idempotency)"
+      ],
+      "exploratory": false,
+      "origin": "rule:money.idempotency",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo Excepción) × Impacto Alto (regla de G. Concurrencia) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-c8912bbe",
+      "case_id": "CP-015",
+      "type": "Funcional",
+      "title_hint": "Camino feliz de CA-4",
+      "ac_refs": [
+        "CA-2",
+        "CA-4"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "formato": "csv",
+        "movimientos_en_rango": "con_movimientos",
+        "generacion_archivo": "servicio_disponible"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "formato": "CSV",
+        "movimientos_en_rango": "Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026",
+        "generacion_archivo": "Servicio operativo"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)",
+        "El archivo incluye fecha, descripción, importe y saldo de cada movimiento del período"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "ac-happy-path",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media; humo → Alta",
+      "smoke": true
+    },
+    {
+      "frame_id": "F-c2445a4f",
+      "case_id": "CP-016",
+      "type": "Funcional",
+      "title_hint": "CA-2 con cuenta=cuenta_usd, formato=xlsx, movimientos_en_rango=sin_movimientos",
+      "ac_refs": [
+        "CA-2",
+        "CA-4"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_usd",
+        "formato": "xlsx",
+        "movimientos_en_rango": "sin_movimientos",
+        "generacion_archivo": "servicio_disponible"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en dólares 0010-7654321/9 (USD)",
+        "formato": "XLSX",
+        "movimientos_en_rango": "Cuenta sin movimientos entre 01/01/2026 y 31/01/2026",
+        "generacion_archivo": "Servicio operativo"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (USD)",
+        "El sistema muestra un mensaje"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-72e64d76",
+      "case_id": "CP-017",
+      "type": "Funcional",
+      "title_hint": "CA-2 con cuenta=cuenta_usd, formato=pdf",
+      "ac_refs": [
+        "CA-2"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_usd",
+        "formato": "pdf",
+        "movimientos_en_rango": "con_movimientos",
+        "generacion_archivo": "servicio_disponible"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en dólares 0010-7654321/9 (USD)",
+        "formato": "PDF",
+        "movimientos_en_rango": "Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026",
+        "generacion_archivo": "Servicio operativo"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (USD)",
+        "El archivo incluye fecha, descripción, importe y saldo de cada movimiento del período"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-779c5f7d",
+      "case_id": "CP-018",
+      "type": "Funcional",
+      "title_hint": "CA-2 con formato=pdf, movimientos_en_rango=sin_movimientos",
+      "ac_refs": [
+        "CA-2"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "formato": "pdf",
+        "movimientos_en_rango": "sin_movimientos",
+        "generacion_archivo": "servicio_disponible"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "formato": "PDF",
+        "movimientos_en_rango": "Cuenta sin movimientos entre 01/01/2026 y 31/01/2026",
+        "generacion_archivo": "Servicio operativo"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)",
+        "El sistema muestra un mensaje"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-699d1e64",
+      "case_id": "CP-019",
+      "type": "Funcional",
+      "title_hint": "CA-2 con formato=xlsx",
+      "ac_refs": [
+        "CA-2"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "formato": "xlsx",
+        "movimientos_en_rango": "con_movimientos",
+        "generacion_archivo": "servicio_disponible"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "formato": "XLSX",
+        "movimientos_en_rango": "Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026",
+        "generacion_archivo": "Servicio operativo"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)",
+        "El archivo incluye fecha, descripción, importe y saldo de cada movimiento del período"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-226df8ae",
+      "case_id": "CP-020",
+      "type": "Funcional",
+      "title_hint": "CA-2 con cuenta=cuenta_usd, movimientos_en_rango=sin_movimientos",
+      "ac_refs": [
+        "CA-2"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_usd",
+        "formato": "csv",
+        "movimientos_en_rango": "sin_movimientos",
+        "generacion_archivo": "servicio_disponible"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en dólares 0010-7654321/9 (USD)",
+        "formato": "CSV",
+        "movimientos_en_rango": "Cuenta sin movimientos entre 01/01/2026 y 31/01/2026",
+        "generacion_archivo": "Servicio operativo"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (USD)",
+        "El sistema muestra un mensaje"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "pairwise",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-2656f421",
+      "case_id": "CP-021",
+      "type": "Excepción",
+      "title_hint": "Estado del servicio que genera el archivo: El servicio de generación no responde o falla",
+      "ac_refs": [
+        "CA-2"
+      ],
+      "bindings": {
+        "cuenta": "cuenta_ars",
+        "formato": "csv",
+        "movimientos_en_rango": "con_movimientos",
+        "generacion_archivo": "servicio_caido"
+      },
+      "data": {
+        "cuenta": "Caja de ahorro en pesos 0010-1234567/8 (ARS)",
+        "formato": "CSV",
+        "movimientos_en_rango": "Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026",
+        "generacion_archivo": "Servicio de generación de archivos caído"
+      },
+      "expected_hints": [
+        "Los importes se muestran en la moneda de la cuenta (ARS)",
+        "El archivo incluye fecha, descripción, importe y saldo de cada movimiento del período"
+      ],
+      "supuestos": [
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.generacion_archivo.servicio_caido)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Excepción) × Impacto Medio (tipo Excepción en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-bf34939d",
+      "case_id": "CP-022",
+      "type": "No funcional",
+      "title_hint": "Compatibilidad del flujo en los navegadores soportados",
+      "ac_refs": [
+        "CA-4"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "El flujo principal se completa igual en cada navegador soportado."
+      ],
+      "supuestos": [
+        "Solo español; Chrome, Firefox y Safari desktop + Chrome móvil. (ver context.platform_i18n)"
+      ],
+      "exploratory": false,
+      "origin": "rule:context.platform_i18n",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo No funcional) × Impacto Medio (tipo No funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    }
+  ],
+  "coverage": {
+    "acceptance": [
+      {
+        "ac_id": "CA-1",
+        "text": "Desde \"Movimientos\", el cliente selecciona una cuenta, un rango de fechas (desde/hasta) y un formato (CSV, XLSX o PDF) y toca \"Exportar\".",
+        "case_ids": [
+          "CP-001",
+          "CP-002",
+          "CP-003",
+          "CP-004",
+          "CP-005",
+          "CP-006",
+          "CP-007",
+          "CP-008",
+          "CP-009",
+          "CP-010",
+          "CP-011",
+          "CP-012",
+          "CP-013",
+          "CP-014"
+        ],
+        "covered": true,
+        "reason": ""
+      },
+      {
+        "ac_id": "CA-2",
+        "text": "El sistema genera el archivo rápidamente con los movimientos del período, incluyendo fecha, descripción, importe y saldo.",
+        "case_ids": [
+          "CP-007",
+          "CP-011",
+          "CP-015",
+          "CP-016",
+          "CP-017",
+          "CP-018",
+          "CP-019",
+          "CP-020",
+          "CP-021"
+        ],
+        "covered": true,
+        "reason": ""
+      },
+      {
+        "ac_id": "CA-3",
+        "text": "El archivo se descarga con el nombre `movimientos_<cuenta>_<desde>_<hasta>.<ext>`.",
+        "case_ids": [
+          "CP-001",
+          "CP-002",
+          "CP-003",
+          "CP-004",
+          "CP-005",
+          "CP-006",
+          "CP-007",
+          "CP-008",
+          "CP-009",
+          "CP-010",
+          "CP-011"
+        ],
+        "covered": true,
+        "reason": ""
+      },
+      {
+        "ac_id": "CA-4",
+        "text": "Si el rango no tiene movimientos, el sistema muestra un mensaje adecuado.",
+        "case_ids": [
+          "CP-015",
+          "CP-016",
+          "CP-022"
+        ],
+        "covered": true,
+        "reason": ""
+      }
+    ],
+    "ac_percent": 100.0,
+    "pairs_total": 57,
+    "pairs_covered": 57,
+    "pairs_percent": 100.0,
+    "boundaries_total": 0,
+    "boundaries_covered": 0,
+    "boundaries_percent": 100.0
+  },
+  "mode": "completo"
+}

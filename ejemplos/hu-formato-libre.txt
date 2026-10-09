@@ -1,0 +1,20 @@
+Ajustar si es necesario. Historia armada a partir de la reunión del 14/08/2026. Revisar criterios, canal de confirmación y campos de la planilla con el cliente antes de desarrollar.
+
+Como: responsable de referencias (preocupacional)
+Quiero: que al crearse un ítem con teléfono se arme el mensaje y me llegue una card/link para mandarlo por WhatsApp, y que al confirmar el envío se cree la línea en la planilla
+Para: no copiar el número, no redactar el texto a mano y no cargar la fila cuando el referente no tiene mail
+
+Criterios de aceptación:
+
+Si el ítem tiene mail de referencias, se dispara el flujo actual de mail y no se muestra card de WhatsApp
+
+Si el ítem tiene teléfono y no mail, se genera una card o link con el mensaje prearmado (texto, sin imagen ni archivo) hacia ese número
+
+Tras abrir el link, la operadora puede marcar “lo mandé” o “no lo mandé”; solo “lo mandé” crea o actualiza la línea en la planilla de referencias con estado pendiente, fecha de envío y el teléfono del referente
+
+Si el teléfono está mal o el envío se marca como no enviado, no queda una línea en estado pendiente
+
+La línea usa el mismo identificador de referente que el circuito de mail, para poder matchear después una respuesta en esa fila
+
+Link de Fathom (si existe): -
+Notas / contexto (opcional): Replicar el patrón de card de onboarding (mirás y mandás). La confirmación puede ser por la card, Teams o mail; casilla compartida ya falló en altas de empleados, hay que usar casilla personal o captura en la propia card. El campo de teléfono lo agrega el cliente en SharePoint; no tomarlo del comentario. Este camino no captura la respuesta de WhatsApp ni calcula días de demora.

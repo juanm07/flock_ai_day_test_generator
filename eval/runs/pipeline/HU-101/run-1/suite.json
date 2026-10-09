@@ -1,0 +1,232 @@
+{
+  "story_id": "HU-101",
+  "cases": [
+    {
+      "frame_id": "F-1e4f0150",
+      "title": "Verificar que al solicitar la recuperación con un email registrado se muestra el mensaje genérico y se envía el enlace de restablecimiento",
+      "preconditions": "Usuario registrado con email qa.usuario01@empresa.com y cuenta activa. Servicio de notificaciones operativo. Acceso a la bandeja de qa.usuario01@empresa.com.",
+      "steps": [
+        {"action": "Abrir la pantalla de login", "expected": "Se muestra el formulario de login con el enlace \"Olvidé mi contraseña\""},
+        {"action": "Hacer clic en \"Olvidé mi contraseña\"", "expected": "Se muestra el formulario de recuperación con un campo de email"},
+        {"action": "Ingresar qa.usuario01@empresa.com en el campo email", "expected": "El campo muestra qa.usuario01@empresa.com"},
+        {"action": "Confirmar el envío del formulario", "expected": "Se muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\""},
+        {"action": "Abrir la bandeja de entrada de qa.usuario01@empresa.com", "expected": "Hay un email con un enlace de restablecimiento de contraseña"}
+      ],
+      "evidence": "Captura del mensaje mostrado y del email recibido con el enlace.",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-79830713",
+      "title": "Verificar que al solicitar la recuperación con un email no registrado se muestra el mismo mensaje genérico",
+      "preconditions": "No existe usuario registrado con el email no.registrado@empresa.com.",
+      "steps": [
+        {"action": "Abrir la pantalla de login", "expected": "Se muestra el formulario de login con el enlace \"Olvidé mi contraseña\""},
+        {"action": "Hacer clic en \"Olvidé mi contraseña\"", "expected": "Se muestra el formulario de recuperación con un campo de email"},
+        {"action": "Ingresar no.registrado@empresa.com en el campo email", "expected": "El campo muestra no.registrado@empresa.com"},
+        {"action": "Confirmar el envío del formulario", "expected": "Se muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\""}
+      ],
+      "evidence": "Captura del mensaje mostrado.",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-db6bfdf7",
+      "title": "Verificar que un texto sin formato de email en el formulario de recuperación es rechazado",
+      "preconditions": "Pantalla de recuperación de contraseña abierta desde \"Olvidé mi contraseña\".",
+      "steps": [
+        {"action": "Ingresar usuario.sin.arroba en el campo email", "expected": "El campo muestra usuario.sin.arroba"},
+        {"action": "Confirmar el envío del formulario", "expected": "[SUPUESTO: se muestra un mensaje de error de formato de email y no se envía ningún enlace ni se muestra el mensaje genérico de CA-1]"}
+      ],
+      "evidence": "Captura del mensaje de error y verificación de que no llega email.",
+      "notes": "[SUPUESTO: la HU no define la validación de formato de email.]"
+    },
+    {
+      "frame_id": "F-3e4e8e84",
+      "title": "Verificar que enviar el formulario de recuperación con el email vacío es rechazado",
+      "preconditions": "Pantalla de recuperación de contraseña abierta desde \"Olvidé mi contraseña\".",
+      "steps": [
+        {"action": "Dejar vacío el campo email (valor vacío)", "expected": "El campo email no tiene contenido"},
+        {"action": "Confirmar el envío del formulario", "expected": "[SUPUESTO: se muestra un mensaje de error indicando que el email es obligatorio y no se envía ningún enlace]"}
+      ],
+      "evidence": "Captura del mensaje de error.",
+      "notes": "[SUPUESTO: la HU no define el comportamiento ante email vacío.]"
+    },
+    {
+      "frame_id": "F-4f4eb395",
+      "title": "Verificar que la respuesta ante un email inexistente es indistinguible de la de un email existente (anti-enumeración)",
+      "preconditions": "Usuario registrado con email qa.usuario01@empresa.com. No existe usuario con el email no.registrado@empresa.com.",
+      "steps": [
+        {"action": "Solicitar la recuperación con qa.usuario01@empresa.com y anotar el mensaje y el tiempo de respuesta", "expected": "Se muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\""},
+        {"action": "Solicitar la recuperación con no.registrado@empresa.com y anotar el mensaje y el tiempo de respuesta", "expected": "Se muestra el mismo mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\", con texto idéntico al del paso 1"},
+        {"action": "Revisar la bandeja de no.registrado@empresa.com o los logs del servicio de notificaciones", "expected": "No se envió ningún email a no.registrado@empresa.com"}
+      ],
+      "evidence": "Capturas de ambos mensajes y log del servicio de notificaciones.",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-e7587615",
+      "title": "Verificar que solicitar la recuperación con una cuenta bloqueada o desactivada no ejecuta la acción",
+      "preconditions": "Usuario bloqueado con email qa.bloqueado01@empresa.com (cuenta bloqueada o desactivada).",
+      "steps": [
+        {"action": "Abrir el formulario de recuperación desde \"Olvidé mi contraseña\"", "expected": "Se muestra el formulario con el campo email"},
+        {"action": "Ingresar qa.bloqueado01@empresa.com en el campo email", "expected": "El campo muestra qa.bloqueado01@empresa.com"},
+        {"action": "Confirmar el envío del formulario", "expected": "[SUPUESTO: se muestra el mismo mensaje genérico \"Si el email existe, recibirás un enlace para restablecer tu contraseña\" y no se envía ningún enlace]"},
+        {"action": "Intentar iniciar sesión con la cuenta qa.bloqueado01@empresa.com", "expected": "[SUPUESTO: la cuenta sigue bloqueada y el acceso es rechazado]"}
+      ],
+      "evidence": "Captura del mensaje, log de notificaciones y del intento de login.",
+      "notes": "[SUPUESTO: la HU no define el comportamiento con cuentas bloqueadas o desactivadas (account.state).]"
+    },
+    {
+      "frame_id": "F-2ee485da",
+      "title": "Explorar el comportamiento ante solicitudes repetidas de recuperación en poco tiempo (rate limiting)",
+      "preconditions": "Usuario registrado con email qa.usuario01@empresa.com.",
+      "steps": [
+        {"action": "Solicitar la recuperación con qa.usuario01@empresa.com una primera vez", "expected": "Se muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\""},
+        {"action": "Repetir la solicitud con el mismo email una segunda vez en menos de 1 hora", "expected": "Se documenta la respuesta observada"},
+        {"action": "Repetir la solicitud con el mismo email una tercera vez en menos de 1 hora", "expected": "[SUPUESTO: a partir de la 3ª solicitud por hora se pide captcha]"},
+        {"action": "Repetir la solicitud con el mismo email una cuarta vez en menos de 1 hora", "expected": "Se documenta el comportamiento observado y la cantidad de emails recibidos"}
+      ],
+      "evidence": "Capturas de cada respuesta y conteo de emails recibidos.",
+      "notes": "[SUPUESTO: máximo 3 solicitudes por hora por usuario; a partir de la 3ª se pide captcha (auth.rate_limit).] Caso exploratorio."
+    },
+    {
+      "frame_id": "F-bf34939d",
+      "title": "Verificar que el flujo de recuperación se completa de igual forma en los navegadores soportados",
+      "preconditions": "Usuario registrado con email qa.usuario01@empresa.com. Disponibles Chrome, Firefox y Safari desktop y Chrome móvil.",
+      "steps": [
+        {"action": "En Chrome desktop, solicitar la recuperación con qa.usuario01@empresa.com", "expected": "Se muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\""},
+        {"action": "En Firefox desktop, solicitar la recuperación con qa.usuario01@empresa.com", "expected": "Se muestra el mismo mensaje que en Chrome"},
+        {"action": "En Safari desktop, solicitar la recuperación con qa.usuario01@empresa.com", "expected": "Se muestra el mismo mensaje que en Chrome"},
+        {"action": "En Chrome móvil, solicitar la recuperación con qa.usuario01@empresa.com", "expected": "Se muestra el mismo mensaje que en Chrome desktop, sin elementos cortados ni superpuestos"}
+      ],
+      "evidence": "Capturas por navegador.",
+      "notes": "[SUPUESTO: solo español; navegadores soportados Chrome, Firefox y Safari desktop + Chrome móvil (context.platform_i18n).]"
+    },
+    {
+      "frame_id": "F-8d5966b2",
+      "title": "Verificar que ante una falla o timeout del servicio de notificaciones el usuario recibe feedback y el sistema queda consistente",
+      "preconditions": "Usuario registrado con email qa.usuario01@empresa.com. Servicio de notificaciones simulado como caído o con timeout.",
+      "steps": [
+        {"action": "Abrir el formulario de recuperación desde \"Olvidé mi contraseña\"", "expected": "Se muestra el formulario con el campo email"},
+        {"action": "Ingresar qa.usuario01@empresa.com en el campo email", "expected": "El campo muestra qa.usuario01@empresa.com"},
+        {"action": "Confirmar el envío del formulario", "expected": "[SUPUESTO: se muestra un mensaje de error genérico con opción de reintentar]"},
+        {"action": "Verificar el contenido del campo email", "expected": "[SUPUESTO: el campo conserva qa.usuario01@empresa.com]"},
+        {"action": "Verificar la bandeja de qa.usuario01@empresa.com", "expected": "No se recibió ningún enlace y la contraseña actual sigue vigente"}
+      ],
+      "evidence": "Captura del mensaje de error y logs del servicio de notificaciones.",
+      "notes": "[SUPUESTO: comportamiento ante falla del servicio externo no definido en la HU (external.failure).]"
+    },
+    {
+      "frame_id": "F-832a9a63",
+      "title": "Verificar que al abrir el enlace y definir una nueva contraseña válida el sistema confirma la actualización",
+      "preconditions": "Enlace de restablecimiento vigente recibido en el email del usuario qa.usuario01@empresa.com (generado según F-1e4f0150).",
+      "steps": [
+        {"action": "Abrir el enlace de restablecimiento recibido en el email", "expected": "Se muestra el formulario para definir una nueva contraseña"},
+        {"action": "Ingresar NuevaClave#2026 en el campo de nueva contraseña", "expected": "El campo acepta el valor ingresado"},
+        {"action": "Confirmar el formulario", "expected": "Se muestra un mensaje que confirma que la contraseña se actualizó"}
+      ],
+      "evidence": "Captura de la confirmación de actualización.",
+      "notes": "Depende de F-1e4f0150."
+    },
+    {
+      "frame_id": "F-c0c4b22b",
+      "title": "Verificar que una nueva contraseña vacía es rechazada al abrir el enlace",
+      "preconditions": "Enlace de restablecimiento vigente recibido en el email del usuario qa.usuario01@empresa.com.",
+      "steps": [
+        {"action": "Abrir el enlace de restablecimiento recibido en el email", "expected": "Se muestra el formulario para definir una nueva contraseña"},
+        {"action": "Dejar vacío el campo de nueva contraseña (valor vacío)", "expected": "El campo no tiene contenido"},
+        {"action": "Confirmar el formulario", "expected": "[SUPUESTO: se muestra un mensaje de error indicando que la contraseña es obligatoria y la contraseña actual no se modifica]"}
+      ],
+      "evidence": "Captura del mensaje de error.",
+      "notes": "[SUPUESTO: la HU no define el rechazo de contraseña vacía ni la política de contraseña (credential.policy).]"
+    },
+    {
+      "frame_id": "F-c1cbaf5d",
+      "title": "Verificar que una nueva contraseña igual a la actual es rechazada al abrir el enlace",
+      "preconditions": "Enlace de restablecimiento vigente recibido en el email del usuario qa.usuario01@empresa.com. Se conoce la contraseña actual del usuario.",
+      "steps": [
+        {"action": "Abrir el enlace de restablecimiento recibido en el email", "expected": "Se muestra el formulario para definir una nueva contraseña"},
+        {"action": "Ingresar la contraseña actual del usuario en el campo de nueva contraseña", "expected": "El campo acepta el valor ingresado"},
+        {"action": "Confirmar el formulario", "expected": "[SUPUESTO: se muestra un mensaje de error indicando que la nueva contraseña no puede ser igual a la actual y la contraseña no se modifica]"}
+      ],
+      "evidence": "Captura del mensaje de error.",
+      "notes": "[SUPUESTO: la HU no define si la nueva contraseña puede coincidir con la actual.]"
+    },
+    {
+      "frame_id": "F-357703fa",
+      "title": "Verificar que un enlace con el token alterado es rechazado y no permite cambiar la contraseña",
+      "preconditions": "Enlace de restablecimiento recibido en el email del usuario qa.usuario01@empresa.com.",
+      "steps": [
+        {"action": "Modificar manualmente un carácter del token en la URL del enlace recibido", "expected": "La URL contiene el token alterado"},
+        {"action": "Abrir la URL con el token alterado", "expected": "[SUPUESTO: se muestra un mensaje de enlace inválido y no se muestra el formulario de nueva contraseña]"},
+        {"action": "Intentar iniciar sesión con la contraseña actual del usuario", "expected": "[SUPUESTO: el inicio de sesión es exitoso, la contraseña no fue modificada]"}
+      ],
+      "evidence": "Captura del mensaje de enlace inválido.",
+      "notes": "[SUPUESTO: la HU no define el comportamiento ante un enlace alterado. El dato de nueva contraseña NuevaClave#2026 no debe llegar a aplicarse.]"
+    },
+    {
+      "frame_id": "F-9c750b00",
+      "title": "Verificar que un enlace vencido es rechazado y ofrece pedir uno nuevo",
+      "preconditions": "Enlace de restablecimiento del usuario qa.usuario01@empresa.com generado hace más de 24 horas (o con reloj del entorno adelantado).",
+      "steps": [
+        {"action": "Abrir el enlace de restablecimiento vencido", "expected": "[SUPUESTO: se muestra el mensaje \"enlace expirado\" con opción de pedir uno nuevo]"},
+        {"action": "Verificar que no se muestra el formulario de nueva contraseña", "expected": "No hay campo para definir una nueva contraseña"}
+      ],
+      "evidence": "Captura del mensaje de enlace expirado.",
+      "notes": "[SUPUESTO: validez de 24 horas (token.expiration); la HU no define la expiración.]"
+    },
+    {
+      "frame_id": "F-3534b477",
+      "title": "Verificar que un enlace ya usado y un enlace anterior al último solicitado son rechazados",
+      "preconditions": "Usuario registrado con email qa.usuario01@empresa.com. Dos enlaces (A y B) generados con solicitudes sucesivas; B es el más reciente.",
+      "steps": [
+        {"action": "Abrir el enlace A (anterior)", "expected": "[SUPUESTO: se rechaza el enlace A por haber sido invalidado por el enlace B]"},
+        {"action": "Abrir el enlace B (último)", "expected": "Se muestra el formulario para definir una nueva contraseña"},
+        {"action": "Ingresar NuevaClave#2026 en el campo de nueva contraseña", "expected": "El campo acepta el valor ingresado"},
+        {"action": "Confirmar el formulario", "expected": "Se muestra un mensaje que confirma que la contraseña se actualizó"},
+        {"action": "Abrir nuevamente el enlace B ya usado", "expected": "[SUPUESTO: se rechaza el enlace B por ser de un solo uso]"}
+      ],
+      "evidence": "Capturas de cada resultado.",
+      "notes": "[SUPUESTO: el último enlace invalida los anteriores y cada enlace es de un solo uso (token.invalidation).]"
+    },
+    {
+      "frame_id": "F-adedc505",
+      "title": "Verificar que tras cambiar la contraseña se invalidan las sesiones abiertas en otros dispositivos",
+      "preconditions": "Usuario qa.usuario01@empresa.com con sesión activa en un segundo dispositivo o navegador. Enlace de restablecimiento vigente.",
+      "steps": [
+        {"action": "En el dispositivo 2, iniciar sesión con qa.usuario01@empresa.com y mantener la sesión abierta", "expected": "El usuario accede a su cuenta"},
+        {"action": "En el dispositivo 1, abrir el enlace de restablecimiento", "expected": "Se muestra el formulario para definir una nueva contraseña"},
+        {"action": "Ingresar NuevaClave#2026 en el campo de nueva contraseña", "expected": "El campo acepta el valor ingresado"},
+        {"action": "Confirmar el formulario", "expected": "Se muestra un mensaje que confirma que la contraseña se actualizó"},
+        {"action": "En el dispositivo 2, recargar la página o realizar una acción autenticada", "expected": "[SUPUESTO: la sesión está invalidada y se redirige a la pantalla de login]"}
+      ],
+      "evidence": "Capturas del dispositivo 2 antes y después del cambio.",
+      "notes": "[SUPUESTO: se invalidan todas las sesiones activas excepto la actual (credential.sessions).]"
+    },
+    {
+      "frame_id": "F-7d217f72",
+      "title": "Verificar que el usuario puede iniciar sesión con la nueva contraseña definida en el restablecimiento",
+      "preconditions": "Contraseña de qa.usuario01@empresa.com restablecida a NuevaClave#2026 (ver F-832a9a63 ejecutado con éxito). Sin sesión activa.",
+      "steps": [
+        {"action": "Abrir la pantalla de login", "expected": "Se muestra el formulario de login"},
+        {"action": "Ingresar qa.usuario01@empresa.com en el campo email", "expected": "El campo muestra qa.usuario01@empresa.com"},
+        {"action": "Ingresar NuevaClave#2026 en el campo contraseña", "expected": "El campo muestra el valor enmascarado"},
+        {"action": "Confirmar el inicio de sesión", "expected": "El usuario inicia sesión y accede a su cuenta con sus datos intactos"}
+      ],
+      "evidence": "Captura de la pantalla posterior al login.",
+      "notes": "Depende de F-832a9a63."
+    },
+    {
+      "frame_id": "F-bfe68892",
+      "title": "Verificar que tras el restablecimiento no se puede iniciar sesión con la contraseña anterior",
+      "preconditions": "Contraseña de qa.usuario01@empresa.com restablecida a NuevaClave#2026 (ver F-832a9a63 ejecutado con éxito). Se conoce la contraseña anterior. Sin sesión activa.",
+      "steps": [
+        {"action": "Abrir la pantalla de login", "expected": "Se muestra el formulario de login"},
+        {"action": "Ingresar qa.usuario01@empresa.com en el campo email", "expected": "El campo muestra qa.usuario01@empresa.com"},
+        {"action": "Ingresar la contraseña anterior al restablecimiento en el campo contraseña", "expected": "El campo muestra el valor enmascarado"},
+        {"action": "Confirmar el inicio de sesión", "expected": "[SUPUESTO: se rechaza el acceso con un mensaje de credenciales inválidas y el usuario permanece en la pantalla de login]"}
+      ],
+      "evidence": "Captura del mensaje de error.",
+      "notes": "[SUPUESTO: la HU no define el rechazo de la contraseña anterior.] Depende de F-832a9a63."
+    }
+  ]
+}

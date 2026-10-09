@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ bid }}{% endblock %}
+{% block content %}
+{% if not bc %}
+  <h1>{{ bid }}</h1>
+  <div class="card"><h2>Mensaje original</h2><pre style="white-space:pre-wrap">{{ report }}</pre></div>
+  <div class="card">
+  {% if llm %}<form method="post" action="/bug/{{ bid }}/analizar" data-busy><button class="btn" type="submit">Analizar con IA</button><span class="busy">Analizando…</span></form>
+  {% else %}<p>No hay IA configurada. <a class="btn" href="/config">Configurar IA</a></p><p class="small muted">O pedíselo a un agente y volvé:</p>
+    <pre>En Claude Code:  usá normalizar-bug con work/{{ bid }}/reporte.md (guardá los hechos en work/{{ bid }}/facts.json)
+Con Pi / otro:   leé AGENTS.md y seguí el Flujo B con work/{{ bid }}/reporte.md</pre>{% endif %}
+  </div>
+{% else %}
+  {% set b = bc.facts %}{% set rej = bc.rejected|map(attribute="path")|list %}
+  <h1>{{ bid }} — {{ bc.title }}</h1>
+  <p class="sub">
+    <span class="chip {{ 'bad' if bc.severity.value in ['S1','S2'] else 'warn' }}">Severidad {{ bc.severity.value }}{{ " preliminar" if not bc.severity.firm }}</span>
+    <span class="chip">Prioridad {{ bc.priority.value }}{{ " preliminar" if not bc.priority.firm }}</span>
+    <span class="chip {{ 'ok' if bc.ok else 'bad' }}">{{ "Control de calidad OK" if bc.ok else "Control de calidad: revisar" }}</span>
+  </p>
+  <div class="grid2">
+    <div class="card">
+      <h2>Por qué esta clasificación</h2>
+      <p><b>Severidad {{ bc.severity.value }}:</b> {{ bc.severity.reason }}</p>
+      {% if bc.severity.conditions %}<p class="small">Puede cambiar si se confirma: {% for k, v in bc.severity.conditions.items() %}<span class="chip progress">{{ L.get(k, k) }} → {{ v }}</span>{% endfor %}</p>{% endif %}
+      <p><b>Prioridad {{ bc.priority.value }}:</b> {{ bc.priority.reason }}</p>
+      {% if bc.priority.conditions %}<p class="small">Puede cambiar si: {% for k, v in bc.priority.conditions.items() %}<span class="chip progress">{{ L.get(k, k) }} → {{ v }}</span>{% endfor %}</p>{% endif %}
+      <h3>Lo que dice el reporte (con su cita)</h3>
+      <ul class="small">{% for k, q in bc.feature_quotes.items() %}<li><b>{{ L.get(k, k) }}: {{ "sí" if bc.features[k] else "no" }}</b> — «{{ q }}»</li>{% endfor %}</ul>
+    </div>
+    <div class="card">
+      <h2>Preguntas para quien reportó</h2>
+      {% for m in bc.missing %}<p class="small">{% if m.critical %}<span class="chip bad">falta</span>{% else %}<span class="chip warn">confirmar</span>{% endif %}
+        <b>{{ m.label }}</b><br>{{ m.question }}</p>{% else %}<p class="muted">No falta información.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="card">
+    <h2>Bug normalizado</h2>
+    <table>
+      <tr><th style="width:200px">Ambiente</th><td>
+        {% for name, f in [("Versión", b.environment.app_version), ("Entorno", b.environment.environment), ("Plataforma", b.environment.platform)] %}
+          {{ name }}: {% if f %}{{ f.text }}{% else %}<span class="chip bad">pendiente</span>{% endif %}{{ " · " if not loop.last }}{% endfor %}</td></tr>
+      <tr><th>Reproducibilidad</th><td>{{ b.frequency.text if b.frequency else "pendiente" }}</td></tr>
+      <tr><th>Usuario afectado</th><td>{{ b.affected_user.text if b.affected_user else "pendiente" }}</td></tr>
+      <tr><th>Pasos</th><td><ol>{% for s in b.steps %}<li>{{ s.text }}{% if not s.quote %} <span class="chip">reconstruido</span>{% endif %}</li>{% else %}<li>pendiente</li>{% endfor %}</ol></td></tr>
+      <tr><th>Resultado actual</th><td><ul>{% for f in b.observed %}<li>{{ f.text }} <span class="muted small">«{{ f.quote }}»</span></li>{% endfor %}</ul>
+        Texto del error: {% if b.error_text and "error_text" not in bc.hedged %}"{{ b.error_text.text }}"{% else %}<span class="chip bad">pendiente (literal)</span>{% endif %}</td></tr>
+      <tr><th>Resultado esperado</th><td>{{ b.expected.text if b.expected else "[SUPUESTO: comportamiento razonable]" }}</td></tr>
+      <tr><th>Hipótesis</th><td><ul>{% for h in b.hypotheses %}<li>{{ h.text }} <span class="chip">{{ "reportero" if h.by == "reporter" else "agente" }}</span></li>{% else %}<li class="muted">—</li>{% endfor %}</ul></td></tr>
+    </table>
+    {% if bc.rejected %}<div class="flash error small" style="margin-top:12px">Datos rechazados por no tener cita en el reporte:
+      {% for r in bc.rejected %}<br>{{ r.path }}: «{{ r.quote }}»{% endfor %}</div>{% endif %}
+    <p style="margin-top:14px"><a class="btn" href="/bug/{{ bid }}/descargar">Descargar (Markdown para el tracker)</a></p>
+  </div>
+  <details class="card"><summary>Mensaje original</summary><pre style="white-space:pre-wrap">{{ report }}</pre></details>
+{% endif %}
+{% endblock %}

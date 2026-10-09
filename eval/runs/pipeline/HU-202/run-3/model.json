@@ -1,0 +1,72 @@
+{
+  "story_id": "HU-202",
+  "title": "Exportación de movimientos de cuenta",
+  "module": "Movimientos",
+  "role": "cliente de home banking",
+  "want": "exportar los movimientos de mi cuenta en un rango de fechas",
+  "so_that": "conciliarlos con mi sistema contable",
+  "feature_tags": ["money", "export", "ui", "dates"],
+  "acceptance_criteria": [
+    {"id": "CA-1", "text": "Desde \"Movimientos\", el cliente selecciona una cuenta, un rango de fechas (desde/hasta) y un formato (CSV, XLSX o PDF) y toca \"Exportar\"."},
+    {"id": "CA-2", "text": "El sistema genera el archivo rápidamente con los movimientos del período, incluyendo fecha, descripción, importe y saldo."},
+    {"id": "CA-3", "text": "El archivo se descarga con el nombre `movimientos_<cuenta>_<desde>_<hasta>.<ext>`."},
+    {"id": "CA-4", "text": "Si el rango no tiene movimientos, el sistema muestra un mensaje adecuado."}
+  ],
+  "parameters": [
+    {
+      "name": "cuenta",
+      "description": "Cuenta del cliente seleccionada para exportar; la moneda de la cuenta define la moneda de los importes.",
+      "kind": "enum",
+      "ac_refs": ["CA-1", "CA-2", "CA-3"],
+      "choices": [
+        {"name": "cuenta_ars", "description": "Cuenta en pesos (ARS)", "kind": "valid", "example": "Caja de ahorro ARS 0012345678",
+         "expected": null},
+        {"name": "cuenta_usd", "description": "Cuenta en dólares (USD)", "kind": "valid", "example": "Caja de ahorro USD 0087654321",
+         "expected": null}
+      ]
+    },
+    {
+      "name": "rango_fechas",
+      "description": "Rango de fechas desde/hasta del período a exportar.",
+      "kind": "date",
+      "ac_refs": ["CA-1", "CA-2", "CA-3", "CA-4"],
+      "choices": [
+        {"name": "con_movimientos", "description": "Rango con movimientos en la cuenta", "kind": "valid", "example": "desde 01/09/2026 hasta 30/09/2026",
+         "expected": "El sistema genera el archivo con los movimientos del período, incluyendo fecha, descripción, importe y saldo",
+         "quote": "El sistema genera el archivo rápidamente con los movimientos del período, incluyendo fecha, descripción, importe y saldo."},
+        {"name": "sin_movimientos", "description": "Rango sin ningún movimiento en la cuenta", "kind": "valid", "example": "desde 01/01/2020 hasta 31/01/2020",
+         "expected": "El sistema muestra un mensaje",
+         "quote": "el sistema muestra un mensaje adecuado"},
+        {"name": "desde_posterior_a_hasta", "description": "Fecha desde posterior a fecha hasta", "kind": "invalid", "example": "desde 30/09/2026 hasta 01/09/2026", "assumed": true},
+        {"name": "fecha_vacia", "description": "Falta completar la fecha desde y/o hasta", "kind": "invalid", "example": "", "assumed": true},
+        {"name": "hasta_futura", "description": "Fecha hasta posterior a la fecha actual", "kind": "invalid", "example": "desde 01/09/2026 hasta 31/12/2030", "assumed": true}
+      ],
+      "bounds": null,
+      "bounds_relevant": true
+    },
+    {
+      "name": "formato",
+      "description": "Formato del archivo exportado.",
+      "kind": "enum",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "csv", "description": "Formato CSV", "kind": "valid", "example": "CSV", "expected": null},
+        {"name": "xlsx", "description": "Formato XLSX", "kind": "valid", "example": "XLSX", "expected": null},
+        {"name": "pdf", "description": "Formato PDF", "kind": "valid", "example": "PDF", "expected": null},
+        {"name": "sin_formato", "description": "No se selecciona ningún formato", "kind": "invalid", "example": "", "assumed": true}
+      ]
+    },
+    {
+      "name": "generacion_archivo",
+      "description": "Estado del servicio/entorno al generar y descargar el archivo.",
+      "kind": "state",
+      "ac_refs": ["CA-2", "CA-3"],
+      "choices": [
+        {"name": "normal", "description": "Generación y descarga sin inconvenientes", "kind": "valid", "example": "servicio operativo"},
+        {"name": "fallo_generacion", "description": "Falla el servicio de generación del archivo o se corta la conexión durante la descarga", "kind": "exception", "example": "servicio de exportación caído", "expected": null}
+      ]
+    }
+  ],
+  "constraints": [],
+  "answers": {}
+}

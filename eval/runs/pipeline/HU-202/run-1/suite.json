@@ -1,0 +1,656 @@
+{
+  "story_id": "HU-202",
+  "cases": [
+    {
+      "frame_id": "F-b82224db",
+      "title": "Verificar que se exporta un archivo CSV con los movimientos de una cuenta en ARS para un rango válido",
+      "preconditions": "Cliente autenticado en home banking, titular de la Cuenta en ARS 0001234567, con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha y el selector de formato"
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta \"Cuenta en ARS 0001234567\" queda seleccionada y sus importes se muestran en ARS"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema genera el archivo CSV con los movimientos del período 01/09/2026 a 30/09/2026 [SUPUESTO: no hay umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se descarga con el nombre movimientos_0001234567_01092026_30092026.csv [SUPUESTO: la HU no define el formato de las fechas ni el identificador de cuenta en el nombre; se asume DDMMAAAA y el número de cuenta]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene las columnas fecha, descripción, importe y saldo, con los importes en ARS"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y del archivo movimientos_0001234567_01092026_30092026.csv abierto",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-8753b104",
+      "title": "Verificar que se exporta un archivo XLSX con los movimientos de una cuenta en USD para un rango válido",
+      "preconditions": "Cliente autenticado en home banking, titular de la Cuenta en USD 0007654321, con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha y el selector de formato"
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en USD 0007654321\"",
+          "expected": "La cuenta \"Cuenta en USD 0007654321\" queda seleccionada y sus importes se muestran en USD"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"XLSX\"",
+          "expected": "El formato \"XLSX\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema genera el archivo XLSX con los movimientos del período 01/09/2026 a 30/09/2026 [SUPUESTO: no hay umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se descarga con el nombre movimientos_0007654321_01092026_30092026.xlsx [SUPUESTO: la HU no define el formato de las fechas ni el identificador de cuenta en el nombre; se asume DDMMAAAA y el número de cuenta]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene las columnas fecha, descripción, importe y saldo, con los importes en USD"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y del archivo movimientos_0007654321_01092026_30092026.xlsx abierto",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-36a85c0a",
+      "title": "Verificar que se exporta un archivo PDF con los movimientos de una cuenta en USD para un rango válido",
+      "preconditions": "Cliente autenticado en home banking, titular de la Cuenta en USD 0007654321, con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha y el selector de formato"
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en USD 0007654321\"",
+          "expected": "La cuenta \"Cuenta en USD 0007654321\" queda seleccionada y sus importes se muestran en USD"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"PDF\"",
+          "expected": "El formato \"PDF\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema genera el archivo PDF con los movimientos del período 01/09/2026 a 30/09/2026 [SUPUESTO: no hay umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se descarga con el nombre movimientos_0007654321_01092026_30092026.pdf [SUPUESTO: la HU no define el formato de las fechas ni el identificador de cuenta en el nombre; se asume DDMMAAAA y el número de cuenta]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene las columnas fecha, descripción, importe y saldo, con los importes en USD"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y del archivo movimientos_0007654321_01092026_30092026.pdf abierto",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-34a777d1",
+      "title": "Verificar que se exporta un archivo PDF con los movimientos de una cuenta en ARS para un rango válido",
+      "preconditions": "Cliente autenticado en home banking, titular de la Cuenta en ARS 0001234567, con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha y el selector de formato"
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta \"Cuenta en ARS 0001234567\" queda seleccionada y sus importes se muestran en ARS"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"PDF\"",
+          "expected": "El formato \"PDF\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema genera el archivo PDF con los movimientos del período 01/09/2026 a 30/09/2026 [SUPUESTO: no hay umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se descarga con el nombre movimientos_0001234567_01092026_30092026.pdf [SUPUESTO: la HU no define el formato de las fechas ni el identificador de cuenta en el nombre; se asume DDMMAAAA y el número de cuenta]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene las columnas fecha, descripción, importe y saldo, con los importes en ARS"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y del archivo movimientos_0001234567_01092026_30092026.pdf abierto",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-746d4afd",
+      "title": "Verificar que se exporta un archivo XLSX con los movimientos de una cuenta en ARS para un rango válido",
+      "preconditions": "Cliente autenticado en home banking, titular de la Cuenta en ARS 0001234567, con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha y el selector de formato"
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta \"Cuenta en ARS 0001234567\" queda seleccionada y sus importes se muestran en ARS"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"XLSX\"",
+          "expected": "El formato \"XLSX\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema genera el archivo XLSX con los movimientos del período 01/09/2026 a 30/09/2026 [SUPUESTO: no hay umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se descarga con el nombre movimientos_0001234567_01092026_30092026.xlsx [SUPUESTO: la HU no define el formato de las fechas ni el identificador de cuenta en el nombre; se asume DDMMAAAA y el número de cuenta]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene las columnas fecha, descripción, importe y saldo, con los importes en ARS"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y del archivo movimientos_0001234567_01092026_30092026.xlsx abierto",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-ce09762c",
+      "title": "Verificar que se exporta un archivo CSV con los movimientos de una cuenta en USD para un rango válido",
+      "preconditions": "Cliente autenticado en home banking, titular de la Cuenta en USD 0007654321, con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha y el selector de formato"
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en USD 0007654321\"",
+          "expected": "La cuenta \"Cuenta en USD 0007654321\" queda seleccionada y sus importes se muestran en USD"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema genera el archivo CSV con los movimientos del período 01/09/2026 a 30/09/2026 [SUPUESTO: no hay umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se descarga con el nombre movimientos_0007654321_01092026_30092026.csv [SUPUESTO: la HU no define el formato de las fechas ni el identificador de cuenta en el nombre; se asume DDMMAAAA y el número de cuenta]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene las columnas fecha, descripción, importe y saldo, con los importes en USD"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y del archivo movimientos_0007654321_01092026_30092026.csv abierto",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-925a7169",
+      "title": "Verificar que no se exporta cuando no se selecciona ninguna cuenta",
+      "preconditions": "Cliente autenticado en home banking, titular de una cuenta en ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026. Dato de prueba: cuenta '' (vacío).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Dejar el selector de cuenta vacío",
+          "expected": "El selector de cuenta no tiene ninguna cuenta seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se genera ni se descarga ningún archivo y se muestra un mensaje de error que indica el campo inválido [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje]"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" con el mensaje mostrado y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-1b61bc4c",
+      "title": "Verificar que no se exporta cuando la fecha desde está vacía",
+      "preconditions": "Cliente autenticado en home banking, titular de una cuenta en ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026. Dato de prueba: fecha desde '' (vacío).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Dejar el campo fecha desde vacío",
+          "expected": "El campo \"desde\" no tiene valor"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se genera ni se descarga ningún archivo y se muestra un mensaje de error que indica el campo inválido [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje]"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" con el mensaje mostrado y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-c7f433b1",
+      "title": "Verificar que no se exporta cuando la fecha desde es posterior a hoy",
+      "preconditions": "Cliente autenticado en home banking, titular de una cuenta en ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026. Dato de prueba: fecha desde 01/01/2030 (futura).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/01/2030\"",
+          "expected": "El campo \"desde\" muestra 01/01/2030"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se genera ni se descarga ningún archivo y se muestra un mensaje de error que indica el campo inválido [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje]"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" con el mensaje mostrado y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-a4cfd537",
+      "title": "Verificar que no se exporta cuando la fecha hasta está vacía",
+      "preconditions": "Cliente autenticado en home banking, titular de una cuenta en ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026. Dato de prueba: fecha hasta '' (vacío).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Dejar el campo fecha hasta vacío",
+          "expected": "El campo \"hasta\" no tiene valor"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se genera ni se descarga ningún archivo y se muestra un mensaje de error que indica el campo inválido [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje]"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" con el mensaje mostrado y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-e02a4b8e",
+      "title": "Verificar que no se exporta cuando la fecha hasta es anterior a la fecha desde",
+      "preconditions": "Cliente autenticado en home banking, titular de una cuenta en ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026. Dato de prueba: fecha hasta 15/08/2026 (anterior a desde).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"15/08/2026\"",
+          "expected": "El campo \"hasta\" muestra 15/08/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se genera ni se descarga ningún archivo y se muestra un mensaje de error que indica el campo inválido [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje]"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" con el mensaje mostrado y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-e8b3033a",
+      "title": "Verificar que no se exporta cuando no se selecciona formato",
+      "preconditions": "Cliente autenticado en home banking, titular de una cuenta en ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026. Dato de prueba: formato '' (vacío).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Dejar el selector de formato sin seleccionar",
+          "expected": "El selector de formato no tiene ningún formato seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se genera ni se descarga ningún archivo y se muestra un mensaje de error que indica el campo inválido [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje]"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" con el mensaje mostrado y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-3ed7e423",
+      "title": "Verificar que un usuario sin permiso no accede a los movimientos de una cuenta ajena",
+      "preconditions": "Usuario A autenticado, titular de la cuenta ARS 0001234567. Usuario B autenticado, no titular de esa cuenta, con otra cuenta propia. Se conoce el identificador de la cuenta de A.",
+      "steps": [
+        {
+          "action": "Iniciar sesión como usuario B",
+          "expected": "Se muestra el home banking de B con solo sus cuentas"
+        },
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "El selector de cuenta lista únicamente las cuentas de B"
+        },
+        {
+          "action": "Solicitar la exportación de la cuenta ARS 0001234567 (de A) modificando el identificador de cuenta en la solicitud de exportación",
+          "expected": "La solicitud es rechazada con respuesta 403 [SUPUESTO: solo el titular de la cuenta puede exportar; otro usuario autenticado recibe 403]"
+        },
+        {
+          "action": "Verificar el resultado de la solicitud",
+          "expected": "No se descarga ningún archivo y no se exponen datos de la cuenta de A"
+        }
+      ],
+      "evidence": "Captura de la respuesta 403 y del listado de cuentas de B",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-ca62321c",
+      "title": "Verificar que la exportación de un rango sin datos informa que no hay movimientos y no genera archivo",
+      "preconditions": "Cliente autenticado, titular de la cuenta ARS 0001234567, sin movimientos entre 01/01/2020 y 31/01/2020.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/01/2020\"",
+          "expected": "El campo \"desde\" muestra 01/01/2020"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"31/01/2020\"",
+          "expected": "El campo \"hasta\" muestra 31/01/2020"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "Se muestra el mensaje \"No hay movimientos para el período\" y no se genera ni se descarga ningún archivo [SUPUESTO: texto del mensaje y comportamiento sin datos no definidos por la HU]"
+        }
+      ],
+      "evidence": "Captura del mensaje mostrado y de la carpeta de descargas sin archivo nuevo",
+      "notes": "Volumen máximo exportable asumido en 10.000 filas (ver export.volume); no cubierto por este caso."
+    },
+    {
+      "frame_id": "F-22399e44",
+      "title": "Verificar que un doble submit de \"Exportar\" no genera exportaciones duplicadas",
+      "preconditions": "Cliente autenticado, titular de la cuenta ARS 0001234567 con movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Cuenta en ARS 0001234567\"",
+          "expected": "La cuenta queda seleccionada"
+        },
+        {
+          "action": "Ingresar la fecha desde \"01/09/2026\"",
+          "expected": "El campo \"desde\" muestra 01/09/2026"
+        },
+        {
+          "action": "Ingresar la fecha hasta \"30/09/2026\"",
+          "expected": "El campo \"hasta\" muestra 30/09/2026"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\" dos veces seguidas en menos de un segundo",
+          "expected": "Se registra una sola operación de exportación [SUPUESTO: la operación es idempotente; el segundo submit no genera una segunda exportación]"
+        },
+        {
+          "action": "Verificar los archivos descargados",
+          "expected": "Se descargó un único archivo movimientos_0001234567_01092026_30092026.csv [SUPUESTO: formato del nombre no definido por la HU]"
+        }
+      ],
+      "evidence": "Captura de la carpeta de descargas con un único archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-59ce2e7e",
+      "title": "Verificar que la exportación de un rango con movimientos incluye fecha, descripción, importe y saldo",
+      "preconditions": "Servicio disponible. Cliente autenticado, titular de una cuenta con Rango con 12 movimientos.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta y el rango con 12 movimientos",
+          "expected": "La cuenta y el rango quedan seleccionados"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "Se descarga el archivo [SUPUESTO: sin umbral definido para \"rápidamente\"; se usa el tiempo de espera estándar de la plataforma]"
+        },
+        {
+          "action": "Abrir el archivo descargado",
+          "expected": "El archivo contiene 12 filas de movimientos, cada una con fecha, descripción, importe y saldo"
+        }
+      ],
+      "evidence": "Captura del archivo abierto con las 12 filas",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-efd83d65",
+      "title": "Verificar que se muestra un mensaje cuando el rango elegido no tiene movimientos",
+      "preconditions": "Servicio disponible. Cliente autenticado, titular de una cuenta con Rango sin movimientos.",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta y un rango sin movimientos",
+          "expected": "La cuenta y el rango quedan seleccionados"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "El sistema muestra un mensaje indicando que el rango no tiene movimientos [SUPUESTO: la HU solo dice \"un mensaje adecuado\" sin texto ni criterio verificable]"
+        }
+      ],
+      "evidence": "Captura del mensaje mostrado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-47b12548",
+      "title": "Verificar que se informa un error cuando falla la generación del archivo",
+      "preconditions": "Cliente autenticado, titular de una cuenta con un rango con 12 movimientos. Servicio de generación caído (simulado, error del servidor o timeout).",
+      "steps": [
+        {
+          "action": "Ir a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\""
+        },
+        {
+          "action": "Seleccionar la cuenta y el rango con 12 movimientos",
+          "expected": "La cuenta y el rango quedan seleccionados"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El formato \"CSV\" queda seleccionado"
+        },
+        {
+          "action": "Tocar \"Exportar\"",
+          "expected": "No se descarga ningún archivo y se muestra un mensaje de error que indica que la exportación falló [SUPUESTO: la HU no define el comportamiento ni el texto del mensaje ante falla del servicio]"
+        },
+        {
+          "action": "Verificar el estado de la pantalla",
+          "expected": "La pantalla \"Movimientos\" mantiene la cuenta, las fechas y el formato elegidos [SUPUESTO]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-bf34939d",
+      "title": "Verificar que el flujo de exportación se completa en los navegadores soportados",
+      "preconditions": "Cliente autenticado con una cuenta con movimientos entre 01/09/2026 y 30/09/2026. Navegadores: Chrome, Firefox y Safari desktop y Chrome móvil.",
+      "steps": [
+        {
+          "action": "Abrir el home banking en Chrome desktop e ir a \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" en español"
+        },
+        {
+          "action": "Exportar la cuenta con el rango 01/09/2026 a 30/09/2026 en formato \"CSV\"",
+          "expected": "Se descarga un archivo con nombre movimientos_<cuenta>_<desde>_<hasta>.csv [SUPUESTO: navegadores soportados no definidos por la HU]"
+        },
+        {
+          "action": "Repetir el paso anterior en Firefox desktop",
+          "expected": "Se descarga el archivo con el mismo resultado"
+        },
+        {
+          "action": "Repetir el paso anterior en Safari desktop",
+          "expected": "Se descarga el archivo con el mismo resultado"
+        },
+        {
+          "action": "Repetir el paso anterior en Chrome móvil",
+          "expected": "Se descarga el archivo con el mismo resultado"
+        }
+      ],
+      "evidence": "Capturas del archivo descargado en cada navegador",
+      "notes": ""
+    }
+  ]
+}

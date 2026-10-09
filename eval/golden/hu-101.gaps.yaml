@@ -1,0 +1,27 @@
+# Lagunas que un QA senior debe detectar en ejemplos/hu-101.md (tomadas de "Lagunas deliberadas" de
+# ejemplos/hu-ejemplo.md). EN MUESTRA: las reglas de rules/gaps.yaml se diseñaron mirando esta HU.
+# `match`: regex (case-insensitive) que se busca en la sección de preguntas al PO de cualquier salida
+# (pipeline o baseline) — mismo criterio para ambos brazos.
+story: HU-101
+gaps:
+  - id: expiration
+    label: "Expiración del enlace"
+    match: ['expir', 'vigen', 'venc', 'caduc', 'válido (?:el|durante|por)']
+  - id: password_policy
+    label: "Política de contraseña"
+    match: ['política', 'longitud', 'mínimo de', 'caracteres']
+  - id: rate_limit
+    label: "Rate limiting / límite de intentos"
+    match: ['límite de (?:solicitudes|intentos|pedidos)', 'rate', 'intentos', 'captcha']
+  - id: invalidation
+    label: "Enlace nuevo invalida los anteriores / un solo uso"
+    match: ['anteriores', 'invalid', 'un solo uso', 'único uso', 'reutiliz', 'reus']
+  - id: sessions
+    label: "Cierre de sesiones activas"
+    match: ['sesiones', 'otros dispositivos']
+  - id: account_state
+    label: "Cuentas bloqueadas/desactivadas"
+    match: ['bloquead', 'desactivad', 'suspendid', 'inactiv']
+  - id: context
+    label: "i18n / navegadores / accesibilidad"
+    match: ['idioma', 'navegador', 'accesib', 'teclado', 'i18n']

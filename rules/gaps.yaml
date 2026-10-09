@@ -1,0 +1,236 @@
+# Reglas de detección de lagunas (preguntas al PO) — versión ejecutable de docs/lineamientos/flujos/preguntas-al-po.md.
+#
+# Una regla se dispara si la HU tiene ALGUNO de los `when_tags` y NO matchea ninguno de los patrones `covered_if`
+# (regex, prefijo en límite de palabra, case-insensitive) en el texto de la HU. Si el TestModel trae `answers[<id>]`,
+# la laguna queda respondida. `param_terms`: si un parámetro del modelo cuyo nombre/descripción matchea tiene
+# `bounds` definidos, la laguna se considera respondida por esos límites. `default_bounds`: límites que se aplican
+# a esos parámetros si el PO acepta el default en el formulario (`tbg po-form` / `tbg po-apply`).
+#
+# `frame` (opcional): caso de prueba que la regla aporta a la suite (heurística de testing). Se genera siempre que
+# la regla se dispare: si la HU cubre el tema, el esperado sale de la HU; si no, del supuesto (default) o la respuesta.
+# `anchor`: términos (de más a menos específico) para vincular el caso a CAs: gana el PRIMER término que matchee
+# algún CA, y el caso se asocia a todos los CAs que matchean ese término (trazabilidad determinista).
+
+max_questions: 8
+
+rules:
+  - id: credential.policy
+    category: "B. Datos"
+    class: IMPORTANTE
+    when_tags: [credential]
+    covered_if: ['política de contraseña', 'mínimo de \d+', 'al menos \d+ caracteres', 'longitud', 'mayúscula']
+    param_terms: ['contrase', 'password', 'clave']
+    question: "¿Cuál es la política de la credencial (longitud mínima/máxima, caracteres obligatorios y permitidos, unicode)?"
+    why: "Define los negativos y bordes del formulario y el mensaje de error esperado; sin política hay riesgo de seguridad."
+    default: "Mínimo 8 y máximo 64 caracteres, al menos 1 mayúscula y 1 número; se aceptan unicode y espacios."
+    default_bounds: { min: 8, max: 64, unit: chars }  # se aplican si el PO acepta el default (tbg po-apply)
+
+  - id: token.expiration
+    category: "E. Estados"
+    class: IMPORTANTE
+    when_tags: [token_link]
+    covered_if: ['expir', 'venc', 'vigen', 'válid[oa] (?:por|durante)', 'caduc']
+    question: "¿Cuánto tiempo es válido el enlace/token y qué ve el usuario si lo usa vencido?"
+    why: "Sin expiración, un enlace filtrado (email reenviado, bandeja compartida) da acceso indefinido."
+    default: "24 horas; al usarlo vencido se muestra 'enlace expirado' con opción de pedir uno nuevo."
+    frame:
+      type: Excepción
+      title_hint: "Uso de un enlace/token vencido"
+      anchor: ['abrir el enlace', 'abre el enlace', 'usar el (?:enlace|código)', 'enlace', 'link', 'token', 'código']
+      expected_hint: "El enlace vencido es rechazado y no permite completar la acción."
+
+  - id: token.invalidation
+    category: "E. Estados"
+    class: IMPORTANTE
+    when_tags: [token_link]
+    covered_if: ['un solo uso', 'único uso', 'invalida', 'anteriores']
+    question: "Al pedir un enlace nuevo, ¿se invalidan los anteriores? ¿El enlace es de un solo uso?"
+    why: "Define si puede haber varios enlaces activos a la vez (superficie de ataque) y si se puede reusar."
+    default: "El último enlace invalida los anteriores y cada enlace es de un solo uso."
+    frame:
+      type: Excepción
+      title_hint: "Reuso de un enlace ya usado y de un enlace anterior al último"
+      anchor: ['abrir el enlace', 'abre el enlace', 'usar el (?:enlace|código)', 'enlace', 'link', 'token', 'código']
+      expected_hint: "Solo el último enlace no usado funciona; los demás son rechazados."
+
+  - id: auth.rate_limit
+    category: "F. Seguridad"
+    class: IMPORTANTE
+    when_tags: [auth, token_link]
+    covered_if: ['intentos', 'rate', 'captcha', 'límite de (?:solicitudes|pedidos|envíos)', 'por hora']
+    question: "¿Hay límite de intentos/solicitudes por usuario o IP? ¿Qué pasa al superarlo?"
+    why: "Sin límite, el flujo es vector de fuerza bruta o de bombardeo de emails."
+    default: "Máximo 3 solicitudes por hora por usuario; a partir de la 3ª se pide captcha."
+    frame:
+      type: No funcional
+      title_hint: "Solicitudes repetidas en poco tiempo (rate limiting)"
+      anchor: ['ingresa su (?:email|usuario)', 'solicit', 'iniciar sesión', 'login']
+      expected_hint: "Documentar el comportamiento observado ante solicitudes repetidas."
+      exploratory_if_open: true
+
+  - id: auth.enumeration
+    category: "F. Seguridad"
+    class: IMPORTANTE
+    when_tags: [auth]
+    covered_if: ['si el (?:email|usuario|correo) existe', 'mensaje genérico', 'no revela']
+    question: "¿Los mensajes de error/confirmación deben ser genéricos para no revelar qué usuarios existen?"
+    why: "Un mensaje distinto para usuarios inexistentes permite enumerar cuentas."
+    default: "Sí: mismo mensaje y mismo tiempo de respuesta exista o no el usuario."
+    frame:
+      type: Negativo
+      title_hint: "Respuesta ante un usuario/email inexistente (anti-enumeración)"
+      anchor: ['ingresa su (?:email|usuario)', 'email', 'usuario']
+      expected_hint: "El mensaje es idéntico al de un usuario existente y no se envía nada."
+
+  - id: credential.sessions
+    category: "G. Concurrencia"
+    class: IMPORTANTE
+    when_tags: [credential]
+    covered_if: ['sesiones', 'otros dispositivos', 'cierra(?:r)? (?:la|las) sesi']
+    question: "Al cambiar la credencial, ¿se cierran las sesiones activas en otros dispositivos?"
+    why: "Escenario de cuenta comprometida: el cambio debería expulsar al intruso."
+    default: "Sí, se invalidan todas las sesiones activas excepto la actual."
+    frame:
+      type: Excepción
+      title_hint: "Sesiones abiertas en otro dispositivo tras el cambio de credencial"
+      anchor: ['define una nueva', 'nueva contraseña', 'contraseña', 'clave', 'sesión']
+      expected_hint: "Las otras sesiones quedan invalidadas."
+
+  - id: account.state
+    category: "E. Estados"
+    class: IMPORTANTE
+    when_tags: [auth]
+    covered_if: ['bloquead', 'desactivad', 'suspendid', 'inactiv', 'deshabilitad']
+    question: "¿Qué pasa si la cuenta está bloqueada, desactivada o pendiente de activación?"
+    why: "Define si el flujo 'revive' cuentas bloqueadas por seguridad."
+    default: "Se muestra el mismo mensaje genérico pero no se ejecuta la acción; la cuenta sigue bloqueada."
+    frame:
+      type: Negativo
+      title_hint: "Ejecución del flujo con una cuenta bloqueada o desactivada"
+      anchor: ['ingresa su (?:email|usuario)', 'iniciar sesión', 'cuenta', 'usuario']
+      expected_hint: "La acción no se ejecuta y la cuenta conserva su estado."
+
+  - id: external.failure
+    category: "C. Errores"
+    class: IMPORTANTE
+    when_tags: [external_dep]
+    covered_if: ['si (?:el servicio|la api|el proveedor) falla', 'no disponible', 'reintent', 'timeout']
+    question: "¿Qué ve el usuario si el servicio externo falla o no responde? ¿Se reintenta?"
+    why: "Sin definición, un fallo del tercero deja al usuario sin feedback o en un estado inconsistente."
+    default: "Mensaje de error genérico con opción de reintentar; no se pierde lo ingresado."
+    frame:
+      type: Excepción
+      title_hint: "Falla o timeout del servicio externo"
+      anchor: ['envía', 'notific', 'servicio', 'email']
+      expected_hint: "El usuario recibe feedback y el sistema queda en estado consistente."
+
+  - id: money.idempotency
+    category: "G. Concurrencia"
+    class: IMPORTANTE
+    when_tags: [money]
+    covered_if: ['doble', 'duplicad', 'idempot', 'una sola vez']
+    question: "¿Qué pasa ante doble submit o reintento de la operación? ¿Se garantiza que se ejecute una sola vez?"
+    why: "En operaciones de dinero, un doble submit genera cobros/movimientos duplicados."
+    default: "La operación es idempotente: el segundo submit no genera un segundo movimiento."
+    frame:
+      type: Excepción
+      title_hint: "Doble submit de la operación"
+      anchor: ['confirm', 'pago', 'transfer', 'export']
+      expected_hint: "Se registra una sola operación."
+
+  - id: roles.permissions
+    category: "D. Permisos"
+    class: IMPORTANTE
+    when_tags: [money, crud, export]
+    covered_if: ['solo (?:el|los) (?:usuario|admin|rol)', 'permiso', 'rol(?:es)?\b', 'autorizad']
+    question: "¿Qué roles pueden ejecutar la funcionalidad y cuáles NO? ¿Ve cada usuario solo sus propios datos?"
+    why: "La autorización se prueba con un rol SIN permiso; sin definición no se puede diseñar ese negativo."
+    default: "Solo el titular de la cuenta; otro usuario autenticado recibe 403 y no ve datos ajenos."
+    frame:
+      type: Negativo
+      title_hint: "Acceso con un usuario sin permiso o a datos de otra cuenta"
+      anchor: ['export', 'descarg', 'cuenta', 'usuario', 'datos']
+      expected_hint: "El acceso es rechazado y no se exponen datos ajenos."
+
+  - id: phone.format
+    category: "B. Datos"
+    class: IMPORTANTE
+    when_tags: [phone]
+    covered_if: ['código de país', 'e\.?164', 'formato (?:del|de) teléfono']
+    question: "¿En qué formato llega el teléfono (código de país, área, celular) y qué pasa si es inválido, incompleto o fijo?"
+    why: "Define los negativos del dato y si el sistema valida antes de usar el número (un link a un número mal armado falla en silencio)."
+    default: "Formato internacional (E.164, ej. +5491122334455); inválido o vacío → no se ejecuta la acción y se informa el motivo."
+    frame:
+      type: Negativo
+      title_hint: "Teléfono con formato inválido, incompleto o vacío"
+      anchor: ['teléfono', 'número', 'celular']
+      expected_hint: "No se ejecuta la acción con un número inválido y se informa el motivo."
+
+  - id: record.duplicates
+    category: "G. Concurrencia"
+    class: IMPORTANTE
+    when_tags: [crud]
+    covered_if: ['no se duplica', 'idempot', 'una sola (?:vez|línea|fila)', 'actualiza la (?:línea|fila|existente)']
+    question: "Si la acción se confirma dos veces o se repite para el mismo ítem, ¿se duplica el registro o se actualiza el existente?"
+    why: "Doble click, reintentos y confirmaciones repetidas son la causa típica de registros duplicados."
+    default: "Se actualiza el registro existente del mismo ítem (idempotente); nunca se duplica."
+    frame:
+      type: Excepción
+      title_hint: "Confirmación repetida sobre el mismo ítem"
+      anchor: ['crea', 'actualiza', 'registr', 'línea', 'fila', 'confirm']
+      expected_hint: "Queda un único registro para el ítem."
+
+  - id: file.limits
+    category: "B. Datos"
+    class: IMPORTANTE
+    when_tags: [file_upload]
+    covered_if: ['tamaño máximo', '\d+ ?mb', 'formatos? (?:permitidos|aceptados)']
+    question: "¿Qué tipos y tamaño máximo de archivo se aceptan?"
+    why: "Define bordes (0 bytes, máximo, máximo+1) y negativos (tipo incorrecto, doble extensión)."
+    default: "PDF, JPG y PNG hasta 10 MB."
+
+  - id: export.volume
+    category: "B. Datos"
+    class: IMPORTANTE
+    when_tags: [export]
+    covered_if: ['máximo de \d+ (?:filas|registros|movimientos)', 'sin resultados', 'sin datos', 'vacío']
+    question: "¿Qué pasa si no hay datos en el rango y cuál es el volumen máximo exportable?"
+    why: "Reporte vacío y reporte masivo son los bordes clásicos de un export."
+    default: "Sin datos: mensaje 'No hay movimientos para el período' y no se genera archivo; máximo 10.000 filas."
+    frame:
+      type: Borde
+      title_hint: "Exportación sin datos en el período"
+      anchor: ['export', 'descarg', 'reporte']
+      expected_hint: "Se informa que no hay datos en lugar de generar un archivo vacío."
+
+  - id: dates.range
+    category: "B. Datos"
+    class: IMPORTANTE
+    when_tags: [dates]
+    covered_if: ['máximo de \d+ (?:días|meses)', 'zona horaria', 'hasta \d+ (?:días|meses)']
+    question: "¿Cuál es el rango de fechas máximo permitido y en qué zona horaria se interpretan las fechas?"
+    why: "Define bordes del rango (desde > hasta, rango máximo ±1) y errores por zona horaria en los cortes de día."
+    default: "Rango máximo de 12 meses, 'desde' ≤ 'hasta', fechas en hora de Argentina (UTC-3)."
+
+  - id: context.platform_i18n
+    category: "J. Contexto"
+    class: MENOR
+    when_tags: [ui]
+    covered_if: ['idioma', 'navegador', 'dispositivo', 'móvil', 'mobile']
+    question: "¿En qué idiomas se muestra/envía el contenido y qué navegadores/dispositivos se soportan?"
+    why: "Define el alcance de i18n y de compatibilidad."
+    default: "Solo español; Chrome, Firefox y Safari desktop + Chrome móvil."
+    frame:
+      type: No funcional
+      title_hint: "Compatibilidad del flujo en los navegadores soportados"
+      anchor: ['pantalla', 'muestra', 'formulario']
+      expected_hint: "El flujo principal se completa igual en cada navegador soportado."
+
+  - id: context.a11y
+    category: "J. Contexto"
+    class: MENOR
+    when_tags: [ui]
+    covered_if: ['teclado', 'accesib', 'lector de pantalla', 'wcag']
+    question: "¿El flujo debe ser navegable por teclado / cumplir algún nivel de accesibilidad?"
+    why: "Es criterio de 'done' en muchos equipos y define casos de accesibilidad."
+    default: "Navegable por teclado con foco visible."

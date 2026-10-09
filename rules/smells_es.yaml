@@ -1,0 +1,106 @@
+# Requirements Smells en español.
+# Basado en Femmer, Méndez Fernández, Wagner & Eder (2017), "Rapid quality assurance with Requirements Smells",
+# Journal of Systems and Software 123: 190-213, que operacionaliza los criterios de ISO/IEC/IEEE 29148.
+# Cada patrón es una regex (case-insensitive) que debe coincidir con palabras completas.
+# Agregar términos acá NO requiere tocar código.
+
+subjective_language:
+  description: "Lenguaje subjetivo: su verificación depende de la opinión de quien prueba."
+  patterns:
+    - 'fácil(?:mente)?'
+    - 'sencill[oa]s?'
+    - 'simple(?:mente)?'
+    - 'amigable'
+    - 'intuitiv[oa]s?'
+    - 'agradable'
+    - 'cómod[oa]s?'
+    - 'adecuad[oa]s?'
+    - 'adecuadamente'
+    - 'apropiad[oa]s?'
+    - 'razonable(?:mente)?'
+
+ambiguous_adverbs_adjectives:
+  description: "Adverbios/adjetivos ambiguos: no fijan un umbral verificable."
+  patterns:
+    - 'rápid[oa]s?'
+    - 'rápidamente'
+    - 'lent[oa]s?'
+    - 'eficiente(?:mente)?'
+    - 'robust[oa]s?'
+    - 'flexible'
+    - 'suficiente(?:s|mente)?'
+    - 'significativ[oa]s?'
+    - 'aproximadamente'
+    - 'algun[oa]s?'
+    - 'vari[oa]s'
+    - 'much[oa]s'
+    - 'poc[oa]s'
+    - 'normalmente'
+    - 'generalmente'
+    - 'habitual(?:es|mente)?'
+    - 'oportun[oa]s?'
+    - 'oportunamente'
+    - 'inmediatamente'
+
+loopholes:
+  description: "Loopholes: cláusulas que vuelven opcional el requisito."
+  patterns:
+    - 'si es posible'
+    - 'en lo posible'
+    - 'cuando sea posible'
+    - 'de ser posible'
+    - 'de ser necesario'
+    - 'si fuera necesario'
+    - 'si corresponde'
+    - 'según corresponda'
+    - 'cuando corresponda'
+    - 'eventualmente'
+    - 'en la medida de lo posible'
+
+open_ended:
+  description: "Términos abiertos o no verificables: el alcance no tiene fin definido."
+  patterns:
+    - 'etc'
+    - 'entre otros'
+    - 'entre otras'
+    - 'y/o'
+    - 'y demás'
+    - 'o similares?'
+    - 'cualquiera? otr[oa]'
+
+superlatives:
+  description: "Superlativos: exigen comparar contra todo lo posible."
+  patterns:
+    - '(?:el|la|los|las) más \w+'
+    - '(?:el|la) mejor'
+    - 'óptim[oa]s?'
+    - 'óptimamente'
+    - 'máximo posible'
+    - 'mínimo posible'
+
+comparatives:
+  description: "Comparativos sin referencia explícita."
+  patterns:
+    - 'más \w+ que'
+    - 'menos \w+ que'
+    - 'mejor que'
+    - 'peor que'
+
+negative_statements:
+  description: "Enunciados negativos: describen lo que el sistema no hace, no lo que sí."
+  patterns:
+    - 'no debe(?:rá|ría)?'
+    - 'no puede'
+    - 'no podrá'
+    - 'nunca'
+    - 'jamás'
+
+vague_pronouns:
+  description: "Pronombres vagos: la referencia puede resolverse de más de una forma."
+  patterns:
+    - 'esto'
+    - 'eso'
+    - 'ello'
+    - 'aquello'
+    - 'lo mismo'
+    - 'lo anterior'

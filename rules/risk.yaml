@@ -1,0 +1,36 @@
+# Priorización por riesgo — versión ejecutable de la fase F5 de docs/lineamientos/flujos/flujo-hu-a-casos.md.
+# Riesgo = probabilidad de defecto × impacto si falla (Amland 2000, "Risk-based testing", JSS 53(3)).
+# La probabilidad sale del tipo de caso + "bumps" léxicos; el impacto, del tipo + tags críticos + categoría de la regla.
+
+probability_by_type:
+  Funcional: Baja
+  Negativo: Media
+  Borde: Alta          # los valores límite concentran defectos (Myers, The Art of Software Testing)
+  Excepción: Media
+  No funcional: Media
+
+probability_bumps:
+  - reason: "encoding/unicode es fuente frecuente de defectos"
+    match: ['unicode', 'ñ', 'emoji', 'acent', 'caracteres especiales']
+  - reason: "depende de un servicio externo"
+    match: ['servicio externo', 'notificaciones', 'timeout']
+
+critical_tags: [auth, credential, money, pii]
+
+impact_by_type:
+  Funcional: { critical: Alto, normal: Medio }
+  Negativo: { critical: Medio, normal: Medio }
+  Borde: { critical: Medio, normal: Medio }
+  Excepción: { critical: Medio, normal: Bajo }
+  No funcional: { critical: Medio, normal: Bajo }
+
+# Casos que vienen de reglas de estas categorías tienen impacto Alto (seguridad nunca es impacto bajo).
+high_impact_categories: ["F. Seguridad", "E. Estados", "G. Concurrencia"]
+
+matrix:              # [probabilidad][impacto] → prioridad
+  Alta:  { Alto: Alta,  Medio: Alta,  Bajo: Media }
+  Media: { Alto: Alta,  Medio: Media, Bajo: Baja }
+  Baja:  { Alto: Media, Medio: Media, Bajo: Baja }
+
+max_smoke: 4
+smoke_priority: Alta  # el subset de humo (happy path de cada CA) se ejecuta primero: si falla, el resto no tiene sentido

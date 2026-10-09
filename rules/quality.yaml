@@ -1,0 +1,70 @@
+# Gate de calidad — versión ejecutable de docs/lineamientos/calidad/checklist-auto-revision.md.
+# Los ítems que antes "autoevaluaba" el LLM ahora los evalúa `tbg validate` (casos) y `tbg bug-check` (bugs).
+
+# Resultado esperado no observable (regla 2 de plantilla-caso-prueba.md)
+vague_expected:
+  - 'correctamente'
+  - 'se ve bien'
+  - 'funciona bien'
+  - 'funciona ok'
+  - 'como corresponde'
+  - 'adecuadamente'
+  - 'de forma adecuada'
+  - 'sin problemas'
+  - 'como se espera'
+  - 'lo esperado'
+  - 'normalmente'
+  - 'exitosamente'
+
+# Datos abstractos (regla 3: "qa.usuario01@empresa.com", no "un email válido")
+abstract_data:
+  - 'un email válido'
+  - 'un correo válido'
+  - 'una contraseña válida'
+  - 'datos válidos'
+  - 'un usuario cualquiera'
+  - 'cualquier valor'
+  - 'un valor válido'
+  - 'un dato válido'
+  - 'un usuario válido'
+
+# Pasos atómicos (regla 1: "un verbo, una acción por paso; sin pasos con 'y'")
+# Raíces de verbos de acción: se marca "<conector> <verbo>" dentro de una misma acción.
+action_connectors: ['y', 'e', 'y luego', 'luego', 'después']
+action_verb_stems:
+  - 'ingres'
+  - 'toc'
+  - 'presion'
+  - 'confirm'
+  - 'abr'
+  - 'cerr'
+  - 'seleccion'
+  - 'complet'
+  - 'envi'
+  - 'naveg'
+  - 'volv'
+  - 'esper'
+  - 'verific'
+  - 'revis'
+  - 'copi'
+  - 'peg'
+  - 'carg'
+  - 'descarg'
+  - 'inici'
+  - 'solicit'
+  - 'defin'
+  - 'escrib'
+  - 'borr'
+  - 'edit'
+  - 'guard'
+  - 'acept'
+  - 'cancel'
+  - 'refresc'
+  - 'recarg'
+  - 'hacer clic'
+  - 'clic'
+  - 'click'
+  - 'export'
+
+title_prefixes: ['Verificar', 'Explorar']
+min_negative_ratio: 0.5   # ≥1 negativo/borde por cada 2 positivos

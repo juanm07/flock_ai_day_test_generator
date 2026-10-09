@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+<h1>Casos de prueba y bugs, con método</h1>
+<p class="sub">Pegá una historia de usuario o un reporte de bug. La IA lee y redacta; las reglas del equipo deciden qué probar,
+  qué preguntar y qué severidad tiene un bug.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h2>Historias de usuario</h2>
+    <p><a class="btn" href="/hu/nueva">+ Nueva HU</a></p>
+    {% if hus %}
+    <table>
+      <tr><th>ID</th><th>Título</th><th>Estado</th></tr>
+      {% for h in hus %}
+      <tr class="click" onclick="location='/hu/{{ h.id }}'">
+        <td><b>{{ h.id }}</b></td><td>{{ h.title }}</td>
+        <td>{% set labels = {"hu": ("Para analizar", "warn"), "modelo": ("Con preguntas", "warn"), "casos": ("Casos sin redactar", "warn"), "redactada": ("Suite lista", "ok")} %}
+          <span class="chip {{ labels[h.stage][1] }}">{{ labels[h.stage][0] }}</span></td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Todavía no hay historias.</p>{% endif %}
+  </div>
+  <div class="card">
+    <h2>Bugs</h2>
+    <p><a class="btn" href="/bug/nuevo">+ Nuevo bug</a></p>
+    {% if bugs %}
+    <table>
+      <tr><th>ID</th><th>Síntoma</th><th>Estado</th></tr>
+      {% for b in bugs %}
+      <tr class="click" onclick="location='/bug/{{ b.id }}'">
+        <td><b>{{ b.id }}</b></td><td>{{ b.title }}</td>
+        <td>{% if b.ready %}<span class="chip ok">Analizado</span>{% else %}<span class="chip warn">Para analizar</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">Todavía no hay bugs.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}

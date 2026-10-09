@@ -1,0 +1,55 @@
+# Vocabulario cerrado de feature_tags + sugerencia determinista por léxico.
+# `tbg lint-hu` sugiere los tags cuyo léxico aparece en la HU; el agente puede agregar tags del vocabulario
+# (nunca inventar tags nuevos: `tbg check-model` los rechaza).
+# Cada término es una regex que debe empezar en límite de palabra (se matchea como prefijo:
+# "autentic" matchea "autenticación"). Usar `\b` al final para exigir palabra completa.
+
+auth:
+  description: "Autenticación, login, sesiones."
+  terms: ['login\b', 'iniciar sesión', 'inicio de sesión', 'autentic', 'acceder a (?:mi|su) cuenta', 'cerrar sesión', 'logue']
+credential:
+  description: "Gestión de credenciales (contraseña, PIN, clave)."
+  terms: ['contraseña', 'password', 'clave\b', 'pin\b']
+token_link:
+  description: "Enlaces/tokens/códigos de un solo uso enviados al usuario."
+  # Solo enlaces/códigos que dan ACCESO (un link a WhatsApp o a un documento no es un token de seguridad)
+  terms: ['enlace (?:de|para) (?:restablec|recuper|verific|activ|confirm|acceso|ingreso|invitaci|cambi|reset)', 'enlace enviado',
+          'link (?:de|para) (?:restablec|recuper|verific|activ|acceso|invitaci|cambi|reset)', 'magic link', 'token',
+          'código de verificación', 'código de seguridad', 'otp\b']
+email:
+  description: "Envío de emails/notificaciones al usuario."
+  terms: ['e-?mail', 'correo electrónico']
+pii:
+  description: "Datos personales."
+  terms: ['e-?mail', 'dni\b', 'teléfono', 'domicilio', 'datos personales', 'cuit\b', 'cuil\b', 'fecha de nacimiento']
+money:
+  description: "Dinero: pagos, transferencias, saldos."
+  terms: ['pago', 'cobro', 'tarjeta', 'transferencia', 'saldo', 'factura', 'importe', 'monto', 'movimientos\b']
+crud:
+  description: "Alta, baja, modificación de entidades."
+  terms: ['crear\b', 'crea\b', 'editar\b', 'eliminar\b', 'borrar\b', 'dar de alta', 'dar de baja', 'modificar\b',
+          'actualiza(?:r)?\b']
+file_upload:
+  description: "Subida de archivos."
+  terms: ['subir (?:un|el|los) archivo', 'adjuntar', 'upload']
+search:
+  description: "Búsqueda y filtros."
+  terms: ['buscar\b', 'búsqueda', 'filtr']
+export:
+  description: "Reportes y exportación de datos."
+  terms: ['export', 'descargar', 'csv\b', 'excel\b', 'xlsx\b', 'pdf\b']
+external_dep:
+  description: "Dependencia de un servicio externo o de otro equipo."
+  terms: ['servicio de', 'api\b', 'integración', 'terceros?\b', 'pasarela', 'proveedor', 'whatsapp', 'teams\b',
+          'sharepoint', 'slack\b', 'sms\b', 'jira\b', 'salesforce', 'sap\b']
+phone:
+  description: "Números de teléfono como dato de entrada o de contacto."
+  terms: ['teléfono', 'telefono', 'celular', 'whatsapp', 'sms\b', 'número de contacto']
+ui:
+  description: "Interfaz de usuario (pantallas, formularios, mensajes)."
+  terms: ['pantalla', 'botón', 'formulario', 'mensaje', 'página', 'muestra\b']
+dates:
+  description: "Fechas, rangos y zonas horarias."
+  # Fechas que el usuario ELIGE o que acotan datos (una "fecha de envío" que el sistema registra no es un rango)
+  terms: ['rango de fechas', 'desde.{0,30}hasta', 'período', 'mensual', 'anual',
+          'fecha de (?:inicio|fin|nacimiento|vencimiento|desde|hasta)']

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Nueva HU{% endblock %}
+{% block content %}
+<h1>Nueva historia de usuario</h1>
+<p class="sub">Pegala como venga: de Jira, de un mail, con viñetas o en Dado/Cuando/Entonces.
+  {% if llm %}La IA la ordena sin cambiar las palabras (se verifica que cada criterio sea literal).
+  {% else %}Sin IA configurada se guarda tal cual: conviene que tenga <code>## ID — Título</code>, "Como… quiero… para…" y criterios numerados.{% endif %}</p>
+<form class="card" method="post" data-busy>
+  <label for="texto">Texto de la historia</label>
+  <textarea id="texto" name="texto" class="big" required placeholder="Ej.: HU-305 Exportar movimientos&#10;Como cliente quiero exportar mis movimientos…&#10;Criterios:&#10;- …"></textarea>
+  <p><button class="btn" type="submit">Guardar y ver interpretación</button><span class="busy">Procesando…</span></p>
+</form>
+{% endblock %}

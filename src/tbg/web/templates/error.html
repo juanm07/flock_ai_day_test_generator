@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Algo falló{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Algo falló</h1>
+  <p class="sub">No se perdió nada de lo guardado. Podés volver e intentar de nuevo; si se repite, pasale este detalle a quien mantiene la herramienta.</p>
+  <pre>{{ detail }}</pre>
+  <p class="small muted">El detalle técnico completo quedó en <code>{{ log }}</code>.</p>
+  <p><a class="btn" href="{{ back }}">Volver</a></p>
+</div>
+{% endblock %}

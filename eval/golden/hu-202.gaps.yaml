@@ -1,0 +1,25 @@
+# Lagunas que un QA senior debe detectar en ejemplos/hu-202.md. FUERA DE MUESTRA: esta lista se escribió
+# ANTES de correr el pipeline sobre la HU, sin ajustar reglas a posteriori.
+story: HU-202
+gaps:
+  - id: date_range
+    label: "Rango de fechas máximo / validación desde > hasta"
+    match: ['rango (?:de fechas )?máximo', 'máximo de (?:\d+ )?(?:días|meses)', 'desde.{0,20}(?:mayor|posterior)', 'hasta.{0,20}(?:menor|anterior)', 'fechas futuras']
+  - id: timezone
+    label: "Zona horaria / corte de día"
+    match: ['zona horaria', 'utc', 'corte de(?:l)? día', 'huso']
+  - id: performance
+    label: "Umbral de 'rápidamente'"
+    match: ['rápidamente', 'segundos', 'tiempo (?:máximo|de respuesta|de generación)', 'umbral']
+  - id: empty_message
+    label: "Texto del mensaje sin movimientos ('adecuado')"
+    match: ['adecuado', 'texto (?:exacto )?del mensaje', 'qué mensaje']
+  - id: number_format
+    label: "Formato de importes / separador decimal / encoding del CSV"
+    match: ['separador', 'decimal', 'encoding', 'utf', 'formato de(?: los)? importes', 'formato numérico']
+  - id: ownership
+    label: "Solo cuentas propias / permisos / cotitulares"
+    match: ['permiso', 'rol(?:es)?\b', 'cuentas? (?:de terceros|ajenas|propias)', 'titular', 'otra cuenta', 'otro usuario']
+  - id: volume
+    label: "Volumen máximo exportable"
+    match: ['volumen', 'cantidad máxima', 'máximo de (?:\d+[ .]?)*(?:filas|registros|movimientos)', 'límite de (?:filas|registros|movimientos)']

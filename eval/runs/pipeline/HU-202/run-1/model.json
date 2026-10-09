@@ -1,0 +1,92 @@
+{
+  "story_id": "HU-202",
+  "title": "Exportación de movimientos de cuenta",
+  "module": "Movimientos",
+  "role": "cliente de home banking",
+  "want": "exportar los movimientos de mi cuenta en un rango de fechas",
+  "so_that": "conciliarlos con mi sistema contable",
+  "feature_tags": ["money", "export", "ui", "dates"],
+  "acceptance_criteria": [
+    {"id": "CA-1", "text": "Desde \"Movimientos\", el cliente selecciona una cuenta, un rango de fechas (desde/hasta) y un formato (CSV, XLSX o PDF) y toca \"Exportar\"."},
+    {"id": "CA-2", "text": "El sistema genera el archivo rápidamente con los movimientos del período, incluyendo fecha, descripción, importe y saldo."},
+    {"id": "CA-3", "text": "El archivo se descarga con el nombre `movimientos_<cuenta>_<desde>_<hasta>.<ext>`."},
+    {"id": "CA-4", "text": "Si el rango no tiene movimientos, el sistema muestra un mensaje adecuado."}
+  ],
+  "parameters": [
+    {
+      "name": "cuenta",
+      "description": "Cuenta del cliente seleccionada en Movimientos (moneda ARS o USD)",
+      "kind": "enum",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "cuenta_ars", "description": "Cuenta en pesos", "kind": "valid", "example": "Cuenta en ARS 0001234567"},
+        {"name": "cuenta_usd", "description": "Cuenta en dólares", "kind": "valid", "example": "Cuenta en USD 0007654321"},
+        {"name": "sin_cuenta", "description": "No se selecciona ninguna cuenta", "kind": "invalid", "example": "", "assumed": true}
+      ]
+    },
+    {
+      "name": "fecha_desde",
+      "description": "Fecha inicial del rango a exportar",
+      "kind": "date",
+      "ac_refs": ["CA-1", "CA-3"],
+      "bounds_relevant": true,
+      "choices": [
+        {"name": "fecha_valida", "description": "Fecha válida del pasado", "kind": "valid", "example": "01/09/2026"},
+        {"name": "fecha_vacia", "description": "Fecha desde sin completar", "kind": "invalid", "example": "", "assumed": true},
+        {"name": "fecha_futura", "description": "Fecha desde posterior a hoy", "kind": "invalid", "example": "01/01/2030", "assumed": true}
+      ]
+    },
+    {
+      "name": "fecha_hasta",
+      "description": "Fecha final del rango a exportar",
+      "kind": "date",
+      "ac_refs": ["CA-1", "CA-3"],
+      "bounds_relevant": true,
+      "choices": [
+        {"name": "fecha_valida", "description": "Fecha válida posterior a desde", "kind": "valid", "example": "30/09/2026"},
+        {"name": "fecha_vacia", "description": "Fecha hasta sin completar", "kind": "invalid", "example": "", "assumed": true},
+        {"name": "hasta_anterior_a_desde", "description": "Fecha hasta anterior a fecha desde", "kind": "invalid", "example": "15/08/2026", "assumed": true}
+      ]
+    },
+    {
+      "name": "movimientos_periodo",
+      "description": "Existencia de movimientos de la cuenta en el rango elegido",
+      "kind": "state",
+      "ac_refs": ["CA-2", "CA-4"],
+      "choices": [
+        {"name": "con_movimientos", "description": "El rango tiene movimientos", "kind": "valid", "example": "Rango con 12 movimientos"},
+        {"name": "sin_movimientos", "description": "El rango no tiene movimientos", "kind": "valid", "example": "Rango sin movimientos", "expected": "el sistema muestra un mensaje adecuado", "quote": "Si el rango no tiene movimientos, el sistema muestra un mensaje adecuado."}
+      ]
+    },
+    {
+      "name": "formato",
+      "description": "Formato del archivo exportado",
+      "kind": "enum",
+      "ac_refs": ["CA-1", "CA-3"],
+      "choices": [
+        {"name": "csv", "description": "Formato CSV", "kind": "valid", "example": "CSV"},
+        {"name": "xlsx", "description": "Formato XLSX", "kind": "valid", "example": "XLSX"},
+        {"name": "pdf", "description": "Formato PDF", "kind": "valid", "example": "PDF"},
+        {"name": "sin_formato", "description": "No se selecciona formato", "kind": "invalid", "example": "", "assumed": true}
+      ]
+    },
+    {
+      "name": "disponibilidad_servicio",
+      "description": "Disponibilidad del servicio de generación del archivo al exportar",
+      "kind": "state",
+      "ac_refs": ["CA-2"],
+      "choices": [
+        {"name": "disponible", "description": "El servicio responde normalmente", "kind": "valid", "example": "Servicio disponible"},
+        {"name": "falla_generacion", "description": "Falla la generación del archivo (error del servidor / timeout)", "kind": "exception", "example": "Servicio de generación caído"}
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "if_choice": {"movimientos_periodo": "sin_movimientos"},
+      "forbids": {"disponibilidad_servicio": ["falla_generacion"]},
+      "reason": "Con falla del servicio no se puede evaluar si el rango tiene movimientos"
+    }
+  ],
+  "answers": {}
+}

@@ -1,0 +1,43 @@
+{
+  "bug_id": "BUG-001",
+  "module": "Login",
+  "symptom": {"text": "Error al iniciar sesión con contraseñas que contienen \"ñ\"", "quote": "pongo mi contraseña (que tiene una ñ porque me gusta complicarme jaja) y me tira un error rojo"},
+  "observed": [
+    {"text": "Al ingresar una contraseña que contiene \"ñ\", el login muestra un error rojo", "quote": "me tira un error rojo"},
+    {"text": "Tras resetear a una contraseña sin \"ñ\", el mismo usuario inicia sesión", "quote": "probé reseteando la contraseña a una sin ñ y ahí pude entrar sin problema"}
+  ],
+  "expected": null,
+  "steps": [
+    {"text": "Ir a la pantalla de login de staging", "quote": "el login de staging"},
+    {"text": "Ingresar el usuario jperez@empresa.com", "quote": "mi usuario es jperez arroba empresa punto com"},
+    {"text": "Ingresar la contraseña que contiene \"ñ\"", "quote": "pongo mi contraseña (que tiene una ñ"},
+    {"text": "Confirmar el login", "quote": null}
+  ],
+  "environment": {
+    "app_version": null,
+    "environment": {"text": "Staging", "quote": "el login de staging"},
+    "platform": {"text": "Chrome (última versión)", "quote": "estoy en chrome, la última versión creo"}
+  },
+  "error_text": {"text": "caracteres no válidos", "quote": "decía algo de caracteres no válidos"},
+  "evidence": [],
+  "frequency": {"text": "Siempre: 3 de 3 intentos", "quote": "me pasó las 3 veces que probé"},
+  "since": {"text": "Desde ayer", "quote": "desde ayer más o menos"},
+  "reporter": "Soporte (chat interno)",
+  "affected_user": {"text": "jperez@empresa.com, usuario con \"ñ\" en la contraseña", "quote": "mi usuario es jperez arroba empresa punto com"},
+  "hypotheses": [
+    {"text": "La \"ñ\" de la contraseña dispara el rechazo", "by": "reporter", "quote": "tiene una ñ"},
+    {"text": "Regresión reciente: la contraseña con \"ñ\" funcionaba hace meses y falla desde ayer; revisar deploys recientes", "by": "agent", "quote": "esa contraseña la uso hace meses"},
+    {"text": "Inconsistencia de charset entre el endpoint de reset (acepta \"ñ\") y el de login (la rechaza)", "by": "agent", "quote": null}
+  ],
+  "features": {
+    "data_loss": {"value": null},
+    "security": {"value": null},
+    "blocks_critical_flow": {"value": true, "quote": "tengo un problema con el login"},
+    "workaround_exists": {"value": true, "quote": "reseteando la contraseña a una sin ñ y ahí pude entrar"},
+    "affects_subset_only": {"value": true, "quote": "que tiene una ñ"},
+    "cosmetic_only": {"value": false, "quote": "me tira un error rojo"},
+    "regression": {"value": null},
+    "in_production": {"value": false, "quote": "el login de staging"},
+    "before_release": {"value": null}
+  }
+}

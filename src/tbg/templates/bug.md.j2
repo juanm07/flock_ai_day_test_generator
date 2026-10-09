@@ -1,0 +1,76 @@
+{%- macro fact(f, path) -%}
+{%- if f is none or path in rejected_paths -%}`[PENDIENTE: {{ missing_by_field.get(path.split(".")[-1], {}).get("label", path) }}]`
+{%- else -%}{{ f.text }}{% if path in hedged %} `[PENDIENTE: confirmar — el reportero dijo «{{ hedged[path] }}»]`{% endif %}{%- endif -%}
+{%- endmacro -%}
+# {{ b.bug_id }} — {{ bc.title }}
+
+> Generado por `tbg bug-check`: cada hecho cita el reporte original (verificado por código); severidad y prioridad
+> calculadas con `rules/severity.yaml`.
+
+| Campo | Valor |
+|---|---|
+| **Título** | {{ bc.title }} |
+| **Severidad** | {{ bc.severity.value }}{% if not bc.severity.firm %} — **preliminar**{% endif %} |
+| **Prioridad** | {{ bc.priority.value }}{% if not bc.priority.firm %} — **preliminar**{% endif %} |
+| **Ambiente** | Aplicación: {{ fact(b.environment.app_version, "environment.app_version") }} · Entorno: {{ fact(b.environment.environment, "environment.environment") }} · Plataforma: {{ fact(b.environment.platform, "environment.platform") }} |
+| **Reportado por / Fecha** | {{ b.reporter or "[PENDIENTE: quién reporta]" }} · {{ fact(b.since, "since") }} |
+| **Reproducibilidad** | {{ fact(b.frequency, "frequency") }} |
+| **Usuario/Rol afectado** | {{ fact(b.affected_user, "affected_user") }} |
+
+**Pasos para reproducir**
+
+| # | Acción |
+|---|--------|
+{% for s in b.steps %}| {{ loop.index }} | {{ s.text }}{% if not s.quote %} _(reconstruido)_{% endif %} |
+{% else %}| 1 | `[PENDIENTE: pasos para reproducir]` |
+{% endfor %}
+**Resultado actual** (solo hechos observados)
+{% for f in b.observed %}{% set p = "observed[" ~ loop.index0 ~ "]" %}{% if p not in rejected_paths %}
+- {{ f.text }}{% if p in hedged %} _(según el reportero: «{{ hedged[p] }}»)_{% endif %}{% endif %}{% endfor %}
+- Texto del error: {% if b.error_text and "error_text" not in rejected_paths and "error_text" not in hedged %}"{{ b.error_text.text }}"{% else %}`[PENDIENTE: texto literal del error]`{% if b.error_text and "error_text" in hedged %} (paráfrasis del reportero: «{{ b.error_text.quote }}»){% endif %}{% endif %}
+
+**Resultado esperado**
+
+- {% if b.expected and "expected" not in rejected_paths %}{{ b.expected.text }}{% else %}`[SUPUESTO: comportamiento razonable — candidato a pregunta al PO]`{% endif %}
+
+**Evidencia**
+{% for f in b.evidence %}{% if ("evidence[" ~ loop.index0 ~ "]") not in rejected_paths %}
+- {{ f.text }}{% endif %}{% else %}
+- `[PENDIENTE: captura, video o log del error]`{% endfor %}
+
+**Impacto**
+
+- {% if bc.features.affects_subset_only %}Subconjunto de usuarios{% elif bc.features.affects_subset_only is false %}Todos los usuarios{% else %}`[PENDIENTE: alcance — ¿a cuántos usuarios afecta?]`{% endif %}{% if bc.features.blocks_critical_flow %}; bloquea un flujo crítico{% endif %}{% if bc.features.workaround_exists %} (existe workaround){% elif bc.features.workaround_exists is false %} (sin workaround){% endif %}.
+
+**Hipótesis / Notas** (separado de los hechos)
+{% for h in b.hypotheses %}
+- **Hipótesis {{ loop.index }} ({{ "del reportero" if h.by == "reporter" else "del agente" }}):** {{ h.text }}{% else %}
+- Sin hipótesis.{% endfor %}
+
+---
+
+## Justificación de clasificación
+
+- **Severidad {{ bc.severity.value }}{{ "" if bc.severity.firm else " (preliminar)" }}**: {{ bc.severity.reason }}{% if bc.severity.conditions %} **Condicionada a**: {% for k, v in bc.severity.conditions.items() %}confirmar `{{ k }}` (si fuera cierto → {{ v }}){{ "; " if not loop.last }}{% endfor %}.{% endif %}
+- **Prioridad {{ bc.priority.value }}{{ "" if bc.priority.firm else " (preliminar)" }}**: {{ bc.priority.reason }}.{% if bc.priority.conditions %} **Podría cambiar si**: {% for k, v in bc.priority.conditions.items() %}`{{ k }}` → {{ v }}{{ "; " if not loop.last }}{% endfor %}.{% endif %}
+- **Features con evidencia**: {% for k, q in bc.feature_quotes.items() %}`{{ k }}={{ bc.features[k] | lower }}` («{{ q }}»){{ "; " if not loop.last }}{% else %}ninguna{% endfor %}.
+- **Desconocidas** (el reporte no lo dice): {{ unknown | join(", ") or "ninguna" }}.
+
+## Información faltante y preguntas de seguimiento
+{% for m in bc.missing %}
+{{ loop.index }}. **[{{ m.label }}]**{% if m.critical %} _(crítico)_{% endif %} {{ m.question }}{% else %}
+Sin faltantes.{% endfor %}
+
+## Auto-revisión (`tbg bug-check`)
+
+| Ítem | Crítico | Resultado |
+|---|---|---|
+{% for id, name, critical, ok, details in bc.checks %}| {{ id }} — {{ name }} | {{ "Sí" if critical else "No" }} | {{ "✓" if ok else "✗" }}{% if details %} {{ details | join("; ") }}{% endif %} |
+{% endfor %}
+**Gate: {{ "APROBADO" if bc.ok else "FALLIDO — corregir la extracción" }}.**
+
+---
+
+> **Reporte original:**
+{% for line in report.strip().splitlines() %}> {{ line }}
+{% endfor %}

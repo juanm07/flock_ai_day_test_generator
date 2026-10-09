@@ -1,0 +1,851 @@
+{
+  "story_id": "HU-202",
+  "cases": [
+    {
+      "frame_id": "F-b82224db",
+      "title": "Verificar que el cliente exporta en CSV los movimientos de su cuenta en ARS del 01/09/2026 al 30/09/2026 y el archivo se descarga con el nombre esperado",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se llama movimientos_<cuenta>_<desde>_<hasta>.csv, con <cuenta> de \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", <desde> de 01/09/2026 y <hasta> de 30/09/2026 [SUPUESTO: la HU no define el formato de <cuenta> ni de las fechas dentro del nombre]"
+        },
+        {
+          "action": "Abrir el archivo CSV descargado",
+          "expected": "El archivo contiene los movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo, y los importes figuran en ARS"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y archivo .csv descargado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-8753b104",
+      "title": "Verificar que se exportan en XLSX los movimientos de la cuenta en USD del 01/09/2026 al 30/09/2026 con el nombre de archivo esperado",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en dólares 0010-7654321/9 (USD)\". La cuenta tiene movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en dólares 0010-7654321/9 (USD)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en dólares 0010-7654321/9 (USD)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"XLSX\"",
+          "expected": "El selector de formato muestra \"XLSX\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se llama movimientos_<cuenta>_<desde>_<hasta>.xlsx, con <cuenta> de \"Caja de ahorro en dólares 0010-7654321/9 (USD)\", <desde> de 01/09/2026 y <hasta> de 30/09/2026 [SUPUESTO: la HU no define el formato de <cuenta> ni de las fechas dentro del nombre]"
+        },
+        {
+          "action": "Abrir el archivo XLSX descargado",
+          "expected": "El archivo contiene los movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo, y los importes figuran en USD"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y archivo .xlsx descargado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-36a85c0a",
+      "title": "Verificar que se exportan en PDF los movimientos de la cuenta en USD del 01/09/2026 al 30/09/2026 con el nombre de archivo esperado",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en dólares 0010-7654321/9 (USD)\". La cuenta tiene movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en dólares 0010-7654321/9 (USD)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en dólares 0010-7654321/9 (USD)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"PDF\"",
+          "expected": "El selector de formato muestra \"PDF\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se llama movimientos_<cuenta>_<desde>_<hasta>.pdf, con <cuenta> de \"Caja de ahorro en dólares 0010-7654321/9 (USD)\", <desde> de 01/09/2026 y <hasta> de 30/09/2026 [SUPUESTO: la HU no define el formato de <cuenta> ni de las fechas dentro del nombre]"
+        },
+        {
+          "action": "Abrir el archivo PDF descargado",
+          "expected": "El archivo contiene los movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo, y los importes figuran en USD"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y archivo .pdf descargado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-34a777d1",
+      "title": "Verificar que se exportan en PDF los movimientos de la cuenta en ARS del 01/09/2026 al 30/09/2026 con el nombre de archivo esperado",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"PDF\"",
+          "expected": "El selector de formato muestra \"PDF\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se llama movimientos_<cuenta>_<desde>_<hasta>.pdf, con <cuenta> de \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", <desde> de 01/09/2026 y <hasta> de 30/09/2026 [SUPUESTO: la HU no define el formato de <cuenta> ni de las fechas dentro del nombre]"
+        },
+        {
+          "action": "Abrir el archivo PDF descargado",
+          "expected": "El archivo contiene los movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo, y los importes figuran en ARS"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y archivo .pdf descargado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-746d4afd",
+      "title": "Verificar que se exportan en XLSX los movimientos de la cuenta en ARS del 01/09/2026 al 30/09/2026 con el nombre de archivo esperado",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"XLSX\"",
+          "expected": "El selector de formato muestra \"XLSX\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se llama movimientos_<cuenta>_<desde>_<hasta>.xlsx, con <cuenta> de \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", <desde> de 01/09/2026 y <hasta> de 30/09/2026 [SUPUESTO: la HU no define el formato de <cuenta> ni de las fechas dentro del nombre]"
+        },
+        {
+          "action": "Abrir el archivo XLSX descargado",
+          "expected": "El archivo contiene los movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo, y los importes figuran en ARS"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y archivo .xlsx descargado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-ce09762c",
+      "title": "Verificar que se exportan en CSV los movimientos de la cuenta en USD del 01/09/2026 al 30/09/2026 con el nombre de archivo esperado",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en dólares 0010-7654321/9 (USD)\". La cuenta tiene movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en dólares 0010-7654321/9 (USD)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en dólares 0010-7654321/9 (USD)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Verificar el nombre del archivo descargado",
+          "expected": "El archivo se llama movimientos_<cuenta>_<desde>_<hasta>.csv, con <cuenta> de \"Caja de ahorro en dólares 0010-7654321/9 (USD)\", <desde> de 01/09/2026 y <hasta> de 30/09/2026 [SUPUESTO: la HU no define el formato de <cuenta> ni de las fechas dentro del nombre]"
+        },
+        {
+          "action": "Abrir el archivo CSV descargado",
+          "expected": "El archivo contiene los movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo, y los importes figuran en USD"
+        }
+      ],
+      "evidence": "Captura de la pantalla \"Movimientos\" y archivo .csv descargado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-a90199a8",
+      "title": "Verificar que no se exporta si no se selecciona ninguna cuenta",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026; Servicio operativo; '' (vacío).",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Dejar el selector de cuenta sin seleccionar",
+          "expected": "El selector de cuenta muestra ninguna cuenta seleccionada"
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema no genera ni descarga ningún archivo y muestra un mensaje de error que indica que debe seleccionarse una cuenta [SUPUESTO: la HU no define el texto del mensaje ni la validación; se asume rechazo con mensaje explicativo sin cambiar el estado]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-1b61bc4c",
+      "title": "Verificar que no se exporta si la fecha desde está vacía",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: '' (vacío).",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Dejar vacío el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra vacío"
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema no genera ni descarga ningún archivo y muestra un mensaje de error que indica que debe completarse la fecha desde [SUPUESTO: la HU no define el texto del mensaje ni la validación; se asume rechazo con mensaje explicativo sin cambiar el estado]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-ac39a589",
+      "title": "Verificar que no se exporta si la fecha desde (30/09/2026) es posterior a la fecha hasta (01/09/2026)",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: 30/09/2026 (con hasta 01/09/2026).",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"30/09/2026\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"01/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema no genera ni descarga ningún archivo y muestra un mensaje de error que indica que la fecha desde no puede ser posterior a la fecha hasta [SUPUESTO: la HU no define el texto del mensaje ni la validación; se asume rechazo con mensaje explicativo sin cambiar el estado]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-a4cfd537",
+      "title": "Verificar que no se exporta si la fecha hasta está vacía",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: '' (vacío).",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Dejar vacío el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra vacío"
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema no genera ni descarga ningún archivo y muestra un mensaje de error que indica que debe completarse la fecha hasta [SUPUESTO: la HU no define el texto del mensaje ni la validación; se asume rechazo con mensaje explicativo sin cambiar el estado]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-704fd2e8",
+      "title": "Verificar que no se exporta si no se selecciona ningún formato",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026; Servicio operativo; '' (vacío).",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Dejar sin seleccionar el formato",
+          "expected": "El selector de formato muestra ningún formato seleccionado"
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema no genera ni descarga ningún archivo y muestra un mensaje de error que indica que debe seleccionarse un formato [SUPUESTO: la HU no define el texto del mensaje ni la validación; se asume rechazo con mensaje explicativo sin cambiar el estado]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error y verificación de que no se descargó ningún archivo",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-3ed7e423",
+      "title": "Verificar que un usuario sin permiso no puede exportar ni ver los movimientos de una cuenta ajena",
+      "preconditions": "Existen dos clientes: qa.usuario01@empresa.com (titular de la cuenta 0010-1234567/8) y qa.usuario02@empresa.com (titular de otra cuenta). Se conoce el identificador de la cuenta 0010-1234567/8.",
+      "steps": [
+        {
+          "action": "Iniciar sesión como qa.usuario02@empresa.com",
+          "expected": "Se muestra el home banking del usuario qa.usuario02@empresa.com"
+        },
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "El selector de cuenta lista solo las cuentas de qa.usuario02@empresa.com y no incluye la cuenta 0010-1234567/8"
+        },
+        {
+          "action": "Enviar la solicitud de exportación de la cuenta 0010-1234567/8 desde 01/09/2026 hasta 30/09/2026 en CSV con un cliente HTTP usando la sesión de qa.usuario02@empresa.com",
+          "expected": "La solicitud es rechazada con respuesta 403 y no se descarga ningún archivo ni se exponen datos de la cuenta ajena [SUPUESTO: solo el titular de la cuenta puede exportar; otro usuario autenticado recibe 403]"
+        }
+      ],
+      "evidence": "Respuesta HTTP 403 capturada y selector de cuentas del usuario",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-ca62321c",
+      "title": "Verificar que la exportación de un período sin datos informa que no hay movimientos y no genera archivo",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta no tiene movimientos entre 01/01/2026 y 31/01/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/01/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/01/2026\""
+        },
+        {
+          "action": "Ingresar \"31/01/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"31/01/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema muestra el mensaje \"No hay movimientos para el período\" y no se genera ni descarga ningún archivo [SUPUESTO: texto del mensaje y máximo de 10.000 filas exportables no definidos en la HU]"
+        }
+      ],
+      "evidence": "Captura del mensaje mostrado y de la ausencia de descarga",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-22399e44",
+      "title": "Verificar que un doble submit sobre \"Exportar\" genera una sola exportación",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar dos veces seguidas el botón \"Exportar\" en menos de un segundo",
+          "expected": "Se registra una sola operación de exportación y se descarga un único archivo movimientos_<cuenta>_<desde>_<hasta>.csv [SUPUESTO: la operación es idempotente ante doble submit]"
+        },
+        {
+          "action": "Revisar la carpeta de descargas",
+          "expected": "Existe un solo archivo movimientos_<cuenta>_<desde>_<hasta>.csv y no una segunda copia"
+        }
+      ],
+      "evidence": "Captura de la carpeta de descargas y del registro de operaciones",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-c8912bbe",
+      "title": "Verificar que el archivo CSV de la cuenta en ARS incluye fecha, descripción, importe y saldo de los movimientos del 01/09/2026 al 30/09/2026",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026; Servicio operativo.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Abrir el archivo CSV descargado",
+          "expected": "El archivo contiene los 25 movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo de cada movimiento, y los importes figuran en ARS"
+        },
+        {
+          "action": "Verificar el tiempo de generación",
+          "expected": "El archivo se genera dentro del umbral que defina el PO [SUPUESTO: la HU dice \"rápidamente\" sin umbral; se toma como criterio provisional un máximo de 5 segundos]"
+        }
+      ],
+      "evidence": "Archivo .csv descargado y cronometraje de la generación",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-c2445a4f",
+      "title": "Verificar que al exportar en XLSX una cuenta en USD sin movimientos del 01/01/2026 al 31/01/2026 se muestra un mensaje",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en dólares 0010-7654321/9 (USD)\". La cuenta no tiene movimientos entre 01/01/2026 y 31/01/2026. Datos de prueba: Cuenta sin movimientos entre 01/01/2026 y 31/01/2026; Servicio operativo.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en dólares 0010-7654321/9 (USD)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en dólares 0010-7654321/9 (USD)\""
+        },
+        {
+          "action": "Ingresar \"01/01/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/01/2026\""
+        },
+        {
+          "action": "Ingresar \"31/01/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"31/01/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"XLSX\"",
+          "expected": "El selector de formato muestra \"XLSX\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema muestra un mensaje indicando que no hay movimientos en el rango 01/01/2026 al 31/01/2026 y no descarga ningún archivo XLSX [SUPUESTO: la HU solo dice \"un mensaje adecuado\"; el texto exacto no está definido]"
+        }
+      ],
+      "evidence": "Captura del mensaje mostrado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-72e64d76",
+      "title": "Verificar que el archivo PDF de la cuenta en USD incluye fecha, descripción, importe y saldo de los movimientos del 01/09/2026 al 30/09/2026",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en dólares 0010-7654321/9 (USD)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026; Servicio operativo.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en dólares 0010-7654321/9 (USD)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en dólares 0010-7654321/9 (USD)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"PDF\"",
+          "expected": "El selector de formato muestra \"PDF\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Abrir el archivo PDF descargado",
+          "expected": "El archivo contiene los 25 movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo de cada movimiento, y los importes figuran en USD"
+        },
+        {
+          "action": "Verificar el tiempo de generación",
+          "expected": "El archivo se genera dentro del umbral que defina el PO [SUPUESTO: la HU dice \"rápidamente\" sin umbral; se toma como criterio provisional un máximo de 5 segundos]"
+        }
+      ],
+      "evidence": "Archivo .pdf descargado y cronometraje de la generación",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-779c5f7d",
+      "title": "Verificar que al exportar en PDF una cuenta en ARS sin movimientos del 01/01/2026 al 31/01/2026 se muestra un mensaje",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta no tiene movimientos entre 01/01/2026 y 31/01/2026. Datos de prueba: Cuenta sin movimientos entre 01/01/2026 y 31/01/2026; Servicio operativo.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/01/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/01/2026\""
+        },
+        {
+          "action": "Ingresar \"31/01/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"31/01/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"PDF\"",
+          "expected": "El selector de formato muestra \"PDF\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema muestra un mensaje indicando que no hay movimientos en el rango 01/01/2026 al 31/01/2026 y no descarga ningún archivo PDF [SUPUESTO: la HU solo dice \"un mensaje adecuado\"; el texto exacto no está definido]"
+        }
+      ],
+      "evidence": "Captura del mensaje mostrado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-699d1e64",
+      "title": "Verificar que el archivo XLSX de la cuenta en ARS incluye fecha, descripción, importe y saldo de los movimientos del 01/09/2026 al 30/09/2026",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. Datos de prueba: Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026; Servicio operativo.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"XLSX\"",
+          "expected": "El selector de formato muestra \"XLSX\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema genera el archivo y la descarga se inicia"
+        },
+        {
+          "action": "Abrir el archivo XLSX descargado",
+          "expected": "El archivo contiene los 25 movimientos del período 01/09/2026 al 30/09/2026 con fecha, descripción, importe y saldo de cada movimiento, y los importes figuran en ARS"
+        },
+        {
+          "action": "Verificar el tiempo de generación",
+          "expected": "El archivo se genera dentro del umbral que defina el PO [SUPUESTO: la HU dice \"rápidamente\" sin umbral; se toma como criterio provisional un máximo de 5 segundos]"
+        }
+      ],
+      "evidence": "Archivo .xlsx descargado y cronometraje de la generación",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-226df8ae",
+      "title": "Verificar que al exportar en CSV una cuenta en USD sin movimientos del 01/01/2026 al 31/01/2026 se muestra un mensaje",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en dólares 0010-7654321/9 (USD)\". La cuenta no tiene movimientos entre 01/01/2026 y 31/01/2026. Datos de prueba: Cuenta sin movimientos entre 01/01/2026 y 31/01/2026; Servicio operativo.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en dólares 0010-7654321/9 (USD)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en dólares 0010-7654321/9 (USD)\""
+        },
+        {
+          "action": "Ingresar \"01/01/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/01/2026\""
+        },
+        {
+          "action": "Ingresar \"31/01/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"31/01/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema muestra un mensaje indicando que no hay movimientos en el rango 01/01/2026 al 31/01/2026 y no descarga ningún archivo CSV [SUPUESTO: la HU solo dice \"un mensaje adecuado\"; el texto exacto no está definido]"
+        }
+      ],
+      "evidence": "Captura del mensaje mostrado",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-2656f421",
+      "title": "Verificar que si el servicio de generación de archivos está caído se informa el error y no se descarga ningún archivo",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026. El servicio de generación de archivos está caído. Datos de prueba: Cuenta con 25 movimientos entre 01/09/2026 y 30/09/2026; Servicio de generación de archivos caído.",
+      "steps": [
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" con el selector de cuenta, los campos de fecha desde/hasta, el selector de formato y el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\"",
+          "expected": "El selector de cuenta muestra \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\""
+        },
+        {
+          "action": "Ingresar \"01/09/2026\" en el campo de fecha desde",
+          "expected": "El campo de fecha desde muestra \"01/09/2026\""
+        },
+        {
+          "action": "Ingresar \"30/09/2026\" en el campo de fecha hasta",
+          "expected": "El campo de fecha hasta muestra \"30/09/2026\""
+        },
+        {
+          "action": "Seleccionar el formato \"CSV\"",
+          "expected": "El selector de formato muestra \"CSV\""
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "El sistema muestra un mensaje de error indicando que no se pudo generar el archivo, no descarga ningún archivo y los datos seleccionados siguen cargados en la pantalla [SUPUESTO: la HU no define el comportamiento ante falla del servicio]"
+        }
+      ],
+      "evidence": "Captura del mensaje de error",
+      "notes": ""
+    },
+    {
+      "frame_id": "F-bf34939d",
+      "title": "Verificar que el flujo de exportación se completa igual en los navegadores soportados",
+      "preconditions": "El cliente tiene sesión iniciada en home banking y posee las cuentas \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\". La cuenta tiene 25 movimientos entre 01/09/2026 y 30/09/2026.",
+      "steps": [
+        {
+          "action": "Abrir home banking en Chrome desktop",
+          "expected": "Se muestra la pantalla de login en Chrome desktop"
+        },
+        {
+          "action": "Iniciar sesión con el usuario del cliente",
+          "expected": "Se muestra el home banking en Chrome desktop"
+        },
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" en Chrome desktop con el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", fecha desde \"01/09/2026\", fecha hasta \"30/09/2026\" y formato \"CSV\"",
+          "expected": "Los cuatro campos muestran los valores elegidos en Chrome desktop"
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "En Chrome desktop se descarga el archivo movimientos_<cuenta>_<desde>_<hasta>.csv con los movimientos del período"
+        },
+        {
+          "action": "Abrir home banking en Firefox desktop",
+          "expected": "Se muestra la pantalla de login en Firefox desktop"
+        },
+        {
+          "action": "Iniciar sesión con el usuario del cliente",
+          "expected": "Se muestra el home banking en Firefox desktop"
+        },
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" en Firefox desktop con el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", fecha desde \"01/09/2026\", fecha hasta \"30/09/2026\" y formato \"CSV\"",
+          "expected": "Los cuatro campos muestran los valores elegidos en Firefox desktop"
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "En Firefox desktop se descarga el archivo movimientos_<cuenta>_<desde>_<hasta>.csv con los movimientos del período"
+        },
+        {
+          "action": "Abrir home banking en Safari desktop",
+          "expected": "Se muestra la pantalla de login en Safari desktop"
+        },
+        {
+          "action": "Iniciar sesión con el usuario del cliente",
+          "expected": "Se muestra el home banking en Safari desktop"
+        },
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" en Safari desktop con el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", fecha desde \"01/09/2026\", fecha hasta \"30/09/2026\" y formato \"CSV\"",
+          "expected": "Los cuatro campos muestran los valores elegidos en Safari desktop"
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "En Safari desktop se descarga el archivo movimientos_<cuenta>_<desde>_<hasta>.csv con los movimientos del período"
+        },
+        {
+          "action": "Abrir home banking en Chrome móvil",
+          "expected": "Se muestra la pantalla de login en Chrome móvil"
+        },
+        {
+          "action": "Iniciar sesión con el usuario del cliente",
+          "expected": "Se muestra el home banking en Chrome móvil"
+        },
+        {
+          "action": "Ingresar a la sección \"Movimientos\"",
+          "expected": "Se muestra la pantalla \"Movimientos\" en Chrome móvil con el botón \"Exportar\""
+        },
+        {
+          "action": "Seleccionar la cuenta \"Caja de ahorro en pesos 0010-1234567/8 (ARS)\", fecha desde \"01/09/2026\", fecha hasta \"30/09/2026\" y formato \"CSV\"",
+          "expected": "Los cuatro campos muestran los valores elegidos en Chrome móvil"
+        },
+        {
+          "action": "Tocar el botón \"Exportar\"",
+          "expected": "En Chrome móvil se descarga el archivo movimientos_<cuenta>_<desde>_<hasta>.csv con los movimientos del período"
+        }
+      ],
+      "evidence": "Capturas de la descarga en cada navegador [SUPUESTO: navegadores soportados: Chrome, Firefox y Safari desktop + Chrome móvil; solo español]",
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}{{ sid }}{% endblock %}
+{% block content %}
+<h1>{{ story.id }} — {{ story.title }}</h1>
+<p class="sub">Seguí los pasos en orden. Todo queda guardado en <code>work/{{ sid }}/</code>.</p>
+<nav class="tabs" id="tabs">
+  <a class="tab" href="#historia">1 · Historia</a><a class="tab" href="#modelo">2 · Datos y variantes</a>
+  <a class="tab" href="#preguntas">3 · Preguntas al PO</a><a class="tab" href="#casos">4 · Casos</a><a class="tab" href="#exportar">5 · Exportar</a>
+</nav>
+<script>
+  // Pestaña activa según la sección visible
+  addEventListener("DOMContentLoaded", () => {
+    const tabs = [...document.querySelectorAll("#tabs .tab")];
+    const mark = id => tabs.forEach(t => t.classList.toggle("active", t.hash === "#" + id));
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && mark(e.target.id)), { rootMargin: "-40% 0px -55% 0px" });
+    document.querySelectorAll("section[id]").forEach(sec => io.observe(sec));
+    mark((location.hash || "#historia").slice(1));
+  });
+</script>
+
+{# ------------------------------------------------------------------ 1. Historia #}
+<section class="card" id="historia">
+  <h2><span class="step-n">1</span>Cómo se interpretó la historia</h2>
+  <div class="grid2">
+    <div>
+      <p><b>Como</b> {{ story.role or "—" }}<br><b>quiero</b> {{ story.want or "—" }}<br><b>para</b> {{ story.so_that or "—" }}</p>
+      {% if story.acceptance_criteria %}
+      <table>{% for ac, text in story.acceptance_criteria %}<tr><td><b>{{ ac }}</b></td><td>{{ text }}</td></tr>{% endfor %}</table>
+      {% else %}<p class="chip bad">No se encontraron criterios de aceptación: sin ellos no se diseñan casos.</p>{% endif %}
+    </div>
+    <div>
+      <h3>Revisión automática del texto</h3>
+      {% if findings %}
+        {% for f in findings %}<p class="small"><span class="chip warn">{{ f.location }}</span> «{{ f.text }}» — {{ f.message }}</p>{% endfor %}
+      {% else %}<p class="muted small">Sin palabras vagas ni problemas de formato.</p>{% endif %}
+      <p class="small muted">Tipo de funcionalidad detectado: {% for t in tags %}<span class="chip">{{ t }}</span>{% endfor %}</p>
+    </div>
+  </div>
+  <details><summary>Editar el texto de la historia</summary>
+    <form method="post" action="/hu/{{ sid }}/editar">
+      <textarea name="markdown" class="big">{{ raw }}</textarea>
+      <p><button class="btn ghost" type="submit">Guardar texto</button></p>
+    </form>
+  </details>
+</section>
+
+{# ------------------------------------------------------------------ 2. Lectura #}
+<section class="card" id="modelo">
+  <h2><span class="step-n">2</span>Qué datos y variantes tiene la historia</h2>
+  {% if not model %}
+    {% if llm %}
+      <p>La IA lee la historia <b>3 veces por separado</b> y se queda con lo que coincide en la mayoría (más estable que una sola lectura).
+        Cada afirmación se verifica contra el texto.</p>
+      <form method="post" action="/hu/{{ sid }}/analizar" data-busy>
+        <button class="btn" type="submit">Analizar con IA</button><span class="busy">Leyendo la historia (puede tardar un par de minutos)…</span>
+      </form>
+    {% else %}
+      <p>No hay IA configurada. Elegí cómo seguir:</p>
+      <div class="grid2">
+        <div class="option">
+          <h3>Configurar una IA</h3>
+          <p class="small">Claude, Gemini (tiene key gratuita), GLM u otra compatible. Se configura en un minuto desde la app.</p>
+          <a class="btn" href="/config">Configurar IA</a>
+        </div>
+        <div class="option">
+          <h3>Seguir sin IA</h3>
+          <p class="small">Se usan solo los criterios y las reglas del equipo: salen igual las preguntas al PO y los casos de camino feliz,
+            seguridad, estados y errores. No se detectan los datos y variantes (eso lo agrega la IA después).</p>
+          <form method="post" action="/hu/{{ sid }}/basico"><button class="btn ghost" type="submit">Seguir sin IA</button></form>
+        </div>
+      </div>
+      <details style="margin-top:12px"><summary>O pedíselo a un agente</summary>
+        <pre>En Claude Code:  usá la skill generar-casos-prueba con work/{{ sid }}/hu.md
+Con Pi / otro:   leé AGENTS.md y seguí el Flujo A con work/{{ sid }}/hu.md</pre>
+        <p class="small muted">Lo que el agente deje en <code>work/{{ sid }}/</code> aparece acá al recargar.</p>
+      </details>
+    {% endif %}
+  {% else %}
+    <table>
+      <tr><th>Dato / condición</th><th>Criterios</th><th>Variantes (verde válida · rojo inválida · naranja excepción)</th><th>Límites</th></tr>
+      {% for p in model.parameters %}
+      <tr>
+        <td><b>{{ p.description }}</b><br><span class="muted small mono">{{ p.name }}</span></td>
+        <td>{% for a in p.ac_refs %}<span class="chip">{{ a }}</span>{% endfor %}</td>
+        <td>{% for c in p.choices %}<span class="chip {{ 'ok' if c.kind == 'valid' else ('bad' if c.kind == 'invalid' else 'warn') }}" title="{{ c.example or '' }}">{{ c.description }}{% if c.assumed %} *{% endif %}</span>{% endfor %}</td>
+        <td>{% if p.bounds %}{{ "%g"|format(p.bounds.min) if p.bounds.min is not none else "" }}–{{ "%g"|format(p.bounds.max) if p.bounds.max is not none else "" }} {{ p.bounds.unit }} <span class="chip">{{ p.bounds.origin }}</span>
+            {% elif p.bounds_relevant %}<span class="chip warn">a definir por el PO</span>{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <p class="small muted">* variante asumida (la historia no dice si es válida): sus casos llevan [SUPUESTO].</p>
+    {% if consensus %}
+      <p class="small">Consenso de {{ consensus.n }} lecturas · coincidencia total {{ (consensus.agreement * 100)|round|int }}%.</p>
+      {% set pend = consensus["items"]|default([])|rejectattr("present")|list %}
+      {% if consensus["items"] %}<details {{ "open" if pend }}><summary>Para revisar: {{ pend|length }} cosa(s) que vio una sola de las {{ consensus.n }} lecturas</summary>
+        <p class="small muted">La IA leyó la historia {{ consensus.n }} veces por separado y solo usa lo que aparece en la mayoría de las lecturas
+          (así el resultado es estable). Esto lo vio una sola, por eso quedó afuera. Suele ser una forma distinta de decir algo que ya está
+          (no hace falta hacer nada) o un detalle que vale la pena sumar: en ese caso, «Agregar».</p>
+        <table>
+          {% for m in consensus["items"] %}
+          <tr><td>{{ m.text }}</td>
+              <td style="width:150px">{% if m.present %}<span class="chip ok">agregado</span>{% else %}
+                <form method="post" action="/hu/{{ sid }}/minoria/{{ m.i }}"><button class="btn small" type="submit">Agregar</button></form>{% endif %}</td></tr>
+          {% endfor %}
+        </table>
+      </details>{% endif %}
+    {% endif %}
+    {% if not model.parameters %}<p class="small">Esta lectura no tiene datos ni variantes (se hizo sin IA): los casos cubren criterios y reglas, sin combinaciones ni valores límite.</p>{% endif %}
+    {% if llm %}<form method="post" action="/hu/{{ sid }}/analizar" data-busy><p><button class="btn ghost" type="submit">{{ "Volver a analizar" if model.parameters else "Analizar con IA (agrega datos y variantes)" }}</button><span class="busy">Leyendo…</span></p></form>
+    {% else %}<p class="small muted"><a href="/config">Configurá una IA</a> para detectar datos y variantes.</p>{% endif %}
+  {% endif %}
+</section>
+
+{# ------------------------------------------------------------------ 3. Preguntas al PO #}
+<section class="card" id="preguntas">
+  <h2><span class="step-n">3</span>Preguntas para el PO</h2>
+  <p class="small muted">Lo que la historia no define. Lo que no se responda queda como <b>[SUPUESTO]</b> en los casos.
+    Los <b>límites</b> (mínimos/máximos) se cargan como números: sin ellos no se generan casos de valores límite.</p>
+  {% set asked = gaps|selectattr("asked")|list %}
+  <form method="post" action="/hu/{{ sid }}/po">
+  {% for g in asked %}
+    <div class="q">
+      <p><b>P-{{ loop.index }}.</b> <span class="chip">{{ g.category }}</span>{% if g.gap_class == "BLOQUEANTE" %}<span class="chip bad">BLOQUEANTE</span>{% endif %}
+        {% if g.status == "answered" %}<span class="chip ok">respondida</span>{% endif %}<br><b>{{ g.question }}</b></p>
+      <p class="small muted">Por qué importa: {{ g.why }}<br>Default propuesto: {{ g.default }}</p>
+      {% if model %}
+        <div class="grid2">
+          <div><label>Respuesta</label><textarea name="resp::{{ g.id }}" placeholder="Escribí la respuesta o marcá el default">{{ model.answers[g.id].value if g.id in model.answers else "" }}</textarea>
+            <label class="check"><input type="checkbox" name="def::{{ g.id }}" value="1"> Acepto el default propuesto</label></div>
+          <div>{% for p in bounds_params.get(g.id, []) %}{% set prm = params[p] %}
+            <label>Límites de «{{ prm.description }}»</label>
+            <div class="row">
+              <input type="number" step="any" name="min::{{ g.id }}::{{ p }}" placeholder="mín" value="{{ '%g'|format(prm.bounds.min) if prm.bounds and prm.bounds.min is not none else '' }}" style="width:110px">
+              <input type="number" step="any" name="max::{{ g.id }}::{{ p }}" placeholder="máx" value="{{ '%g'|format(prm.bounds.max) if prm.bounds and prm.bounds.max is not none else '' }}" style="width:110px">
+              <select name="unit::{{ g.id }}::{{ p }}" style="width:130px">{% for u in ["chars","value","bytes","items","days"] %}<option {{ "selected" if prm.bounds and prm.bounds.unit == u }}>{{ u }}</option>{% endfor %}</select>
+            </div>{% endfor %}</div>
+        </div>
+      {% endif %}
+    </div>
+  {% else %}<p class="muted">No hay preguntas abiertas.</p>{% endfor %}
+  {% if model and asked %}<p><button class="btn" type="submit">Guardar respuestas</button></p>
+  {% elif not model %}<p class="small muted">Para responder, primero completá el paso 2.</p>{% endif %}
+  </form>
+  {% set resolved = gaps|rejectattr("status", "equalto", "open")|list %}
+  {% if resolved %}<details><summary>Ya resuelto ({{ resolved|length }})</summary>
+    <ul class="small">{% for g in resolved %}<li><b>{{ g.id }}</b>: {{ g.answer }}</li>{% endfor %}</ul></details>{% endif %}
+</section>
+
+{# ------------------------------------------------------------------ 4. Casos #}
+<section class="card" id="casos">
+  <h2><span class="step-n">4</span>Casos de prueba</h2>
+  {% if not model %}<p class="muted">Disponible después del paso 2.</p>
+  {% else %}
+    {% if stale %}<p class="flash error">Las respuestas o el análisis cambiaron después de diseñar los casos: volvé a diseñarlos.</p>{% endif %}
+    <form method="post" action="/hu/{{ sid }}/generar" class="row">
+      <button class="btn {{ 'ghost' if frames }}" type="submit">{{ "Volver a diseñar casos" if frames else "Diseñar casos" }}</button>
+      <span class="small muted">Lo calculan las reglas (sin IA): qué probar, con qué datos, prioridad y cobertura. Los casos ya redactados se conservan.</span>
+    </form>
+    {% if frames %}
+      {% set c = frames.coverage %}
+      <div class="metrics" style="margin:16px 0">
+        <div class="metric stat-card-hero"><span>Casos</span><b>{{ frames.frames|length }}</b></div>
+        <div class="metric"><span>Criterios cubiertos</span><b>{{ c.ac_percent|round|int }}%</b></div>
+        <div class="metric"><span>Combinaciones (pares)</span><b>{{ c.pairs_covered }}/{{ c.pairs_total }}</b></div>
+        <div class="metric"><span>Valores límite</span>{% if c.boundaries_total %}<b>{{ c.boundaries_covered }}/{{ c.boundaries_total }}</b>{% else %}<b class="word">Sin límites del PO</b>{% endif %}</div>
+        <div class="metric"><span>Redactados</span><b>{{ drafts|length }}/{{ frames.frames|length }}</b></div>
+        <div class="metric"><span>Control de calidad</span><b>{% if report %}{{ "✓ OK" if report.ok else "✗ revisar" }}{% else %}—{% endif %}</b></div>
+      </div>
+      {% set missing = frames.frames|length - drafts|length %}
+      {% if missing > 0 %}
+        <div class="grid2" style="margin-bottom:12px">
+          <div class="option">
+            <h3>Redactar {{ missing }} casos</h3>
+            {% if llm %}<form method="post" action="/hu/{{ sid }}/redactar" data-busy><button class="btn" type="submit">Redactar con la IA configurada</button>
+              <span class="busy">Redactando y validando (varios minutos)…</span></form>
+            {% else %}<p class="small"><a href="/config">Configurá una IA</a>, usá otra IA con el paquete de al lado, o abrí cada caso y redactalo a mano.</p>{% endif %}
+          </div>
+          <div class="option">
+            <h3>Usar otra IA (más rápido)</h3>
+            <p class="small">Descargá el paquete, pegalo en ChatGPT, Gemini, Claude o la que uses, y traé la respuesta acá: se valida igual.</p>
+            <p><a class="btn ghost" href="/hu/{{ sid }}/descargar/paquete">Descargar paquete para otra IA</a></p>
+            <details><summary>Importar la respuesta</summary>
+              <form method="post" action="/hu/{{ sid }}/importar" enctype="multipart/form-data">
+                <label for="respuesta">Respuesta de la IA (pegala tal cual)</label>
+                <textarea id="respuesta" name="respuesta" class="big" placeholder='{"cases": [ … ]}'></textarea>
+                <label for="archivo">…o subí el archivo</label><input type="file" id="archivo" name="archivo" accept=".json,.txt,.md">
+                <p><button class="btn" type="submit">Importar y validar</button></p>
+              </form>
+            </details>
+          </div>
+        </div>
+      {% endif %}
+      {% if report and not report.ok %}<details open><summary>Problemas del control de calidad</summary><ul class="small">
+        {% for ch in report.checks if not ch.passed and ch.critical %}{% for d in ch.details %}<li><b>{{ ch.name }}</b>: {{ d }}</li>{% endfor %}{% endfor %}</ul></details>{% endif %}
+      <div class="row small" style="margin-top:14px" id="filtros">
+        <span class="muted">Filtrar:</span>
+        <select data-f="tipo" style="width:150px"><option value="">Todos los tipos</option>{% for t in frames.frames|map(attribute="type")|unique %}<option>{{ t }}</option>{% endfor %}</select>
+        <select data-f="prio" style="width:150px"><option value="">Toda prioridad</option><option>Alta</option><option>Media</option><option>Baja</option></select>
+        <label class="check" style="margin:0"><input type="checkbox" data-f="humo"> solo humo</label>
+        <label class="check" style="margin:0"><input type="checkbox" data-f="sup"> solo con supuestos</label>
+        <span class="muted" id="cuenta"></span>
+      </div>
+      <table style="margin-top:8px" id="tabla-casos">
+        <tr><th>Caso</th><th>Tipo</th><th>Prioridad</th><th>Criterios</th><th>Título</th><th></th></tr>
+        {% for f in frames.frames %}{% set d = drafts.get(f.frame_id) %}
+        <tr class="click caso" data-tipo="{{ f.type }}" data-prio="{{ f.priority }}" data-humo="{{ 1 if f.smoke else 0 }}" data-sup="{{ 1 if f.supuestos else 0 }}"
+            onclick="location='/hu/{{ sid }}/caso/{{ f.frame_id }}'">
+          <td><b>{{ f.case_id }}</b></td><td>{{ f.type }}</td>
+          <td><span class="chip {{ 'bad' if f.priority == 'Alta' else ('progress' if f.priority == 'Media' else 'pending') }}">{{ f.priority }}</span></td>
+          <td>{% for a in f.ac_refs %}<span class="chip">{{ a }}</span>{% else %}<span class="muted small">explor.</span>{% endfor %}</td>
+          <td>{% if d %}{{ d.title }}{% else %}<span class="muted">{{ f.title_hint }}</span>{% endif %}</td>
+          <td>{% if f.smoke %}<span class="chip accent">humo</span>{% endif %}{% if f.supuestos %}<span class="chip warn">supuesto</span>{% endif %}
+              {% if f.exploratory %}<span class="chip">exploratorio</span>{% endif %}{% if not d %}<span class="chip bad">sin redactar</span>{% endif %}</td>
+        </tr>{% endfor %}
+      </table>
+      <script>
+        (() => {
+          const ctl = [...document.querySelectorAll("#filtros [data-f]")], rows = [...document.querySelectorAll("tr.caso")];
+          const apply = () => {
+            const v = Object.fromEntries(ctl.map(c => [c.dataset.f, c.type === "checkbox" ? c.checked : c.value]));
+            let n = 0;
+            rows.forEach(r => {
+              const show = (!v.tipo || r.dataset.tipo === v.tipo) && (!v.prio || r.dataset.prio === v.prio)
+                && (!v.humo || r.dataset.humo === "1") && (!v.sup || r.dataset.sup === "1");
+              r.style.display = show ? "" : "none"; n += show;
+            });
+            document.getElementById("cuenta").textContent = `${n} de ${rows.length}`;
+          };
+          ctl.forEach(c => c.addEventListener("change", apply)); apply();
+        })();
+      </script>
+    {% endif %}
+  {% endif %}
+</section>
+
+{# ------------------------------------------------------------------ 5. Exportar #}
+<section class="card" id="exportar">
+  <h2><span class="step-n">5</span>Exportar</h2>
+  {% if frames and suite %}
+    <p class="row">
+      <a class="btn" href="/hu/{{ sid }}/descargar/md">Suite (Markdown)</a>
+      <a class="btn" href="/hu/{{ sid }}/descargar/feature">Gherkin (.feature)</a>
+      <a class="btn ghost" href="/hu/{{ sid }}/descargar/steps">Steps Playwright (.ts)</a>
+      <a class="btn ghost" href="/hu/{{ sid }}/descargar/disenados">Casos diseñados (sin redactar)</a>
+    </p>
+    <details><summary>Cómo usar el .feature con Playwright</summary>
+      <pre>npm i -D @playwright/test playwright-bdd
+# copiá {{ sid }}.feature a features/ y {{ sid }}.steps.ts a steps/
+# playwright.config.ts:
+#   import { defineBddConfig } from 'playwright-bdd';
+#   const testDir = defineBddConfig({ features: 'features/*.feature', steps: 'steps/*.ts' });
+#   export default defineConfig({ testDir });
+npx bddgen && npx playwright test --grep @humo     # empezá por el subset de humo</pre>
+      <p class="small muted">Cada step trae un TODO para implementar con Playwright. Los tags (@CP-001, @CA-1, @humo, @prioridad-alta,
+        @supuesto) permiten filtrar qué correr y mantienen la trazabilidad con la historia.</p>
+    </details>
+  {% elif frames %}
+    <p class="small muted">La suite, el Gherkin y los steps necesitan los casos redactados (paso 4). Mientras tanto:</p>
+    <p class="row"><a class="btn ghost" href="/hu/{{ sid }}/descargar/disenados">Casos diseñados (sin redactar)</a>
+      <a class="btn ghost" href="/hu/{{ sid }}/descargar/paquete">Paquete para redactar con otra IA</a></p>
+  {% else %}<p class="muted">Disponible cuando haya casos diseñados.</p>{% endif %}
+</section>
+{% endblock %}

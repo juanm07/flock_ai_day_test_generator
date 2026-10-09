@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Configurar IA{% endblock %}
+{% block content %}
+<h1>Configurar IA</h1>
+<p class="sub">La IA lee las historias y redacta los casos. Las reglas, las prioridades y los controles no dependen de ella.
+  Sin IA la app igual funciona («Seguir sin IA» en el paso 2), o le podés pedir el trabajo a un agente.</p>
+
+{% if locked %}
+<div class="card">
+  <h2>Configuración bloqueada</h2>
+  <p>Esta instalación está protegida: la IA se configura con variables de entorno del servidor y la key nunca pasa por el navegador.</p>
+  <p>Estado actual: <b>{{ llm_label }}</b></p>
+</div>
+{% else %}
+{% if env_config %}<div class="flash ok">Hay una IA configurada por variables de entorno ({{ current.label }}), que tiene prioridad sobre lo que guardes acá.</div>{% endif %}
+
+<div class="card">
+  <h2>Proveedor</h2>
+  <div class="row">
+    {% for key, p in PRESETS.items() %}
+      <a class="chip {{ 'accent' if key == preset else '' }}" href="/config?preset={{ key }}">{{ p.label }}{% if key == active %} · en uso{% endif %}</a>
+    {% endfor %}
+  </div>
+  <p class="small muted" style="margin-top:8px">{{ PRESETS[preset].help }}. Cada proveedor guarda su propia key y su modelo.</p>
+</div>
+
+<form class="card" method="post" action="/config" data-busy>
+  <input type="hidden" name="preset" value="{{ preset }}">
+  <h2>{{ PRESETS[preset].label }} {% if preset == active %}<span class="chip ok">en uso</span>{% endif %}</h2>
+
+  <label for="api_key">API key</label>
+  <input type="password" id="api_key" name="api_key" autocomplete="off"
+         placeholder="{{ 'Guardada (' ~ prof.masked_key ~ '). Dejá vacío para conservarla' if prof.api_key else 'Pegá tu API key' }}">
+  <p class="small muted">Se guarda solo en este equipo (<code>~/.tbg/config.json</code>, fuera del repositorio) y nunca se muestra completa.</p>
+
+  <label for="model">Modelo</label>
+  {% if models %}
+    <select id="model" name="model" onchange="document.getElementById('other').style.display = this.value === '__otro__' ? '' : 'none'">
+      {% if not prof.model %}<option value="" selected disabled>Elegí un modelo…</option>{% endif %}
+      {% for m in models %}<option value="{{ m }}" {{ "selected" if m == prof.model }}>{{ m }}</option>{% endfor %}
+      <option value="__otro__">Otro (escribirlo)…</option>
+    </select>
+    <input type="text" id="other" name="model_other" placeholder="Nombre exacto del modelo" style="display:none;margin-top:8px">
+    <p class="small muted">{{ models|length }} modelos disponibles con tu key. ¿Falta uno? «Probar conexión» actualiza la lista.</p>
+  {% else %}
+    <input type="hidden" name="model" value="__otro__">
+    <input type="text" id="model" name="model_other" value="{{ prof.model or PRESETS[preset].model }}"
+           placeholder="Tocá «Probar conexión» para elegir de la lista">
+    <p class="small muted">Tocá «Guardar y probar conexión»: trae la lista de modelos de tu cuenta para elegir de un desplegable.</p>
+  {% endif %}
+
+  <details {{ "open" if preset == "custom" }}><summary>Opciones avanzadas</summary>
+    <label for="base_url">Endpoint (solo APIs compatibles con OpenAI)</label>
+    <input type="text" id="base_url" name="base_url" value="{{ prof.base_url or PRESETS[preset].base_url }}" placeholder="https://…/v1/">
+    <label for="effort">Esfuerzo (solo Claude)</label>
+    <select id="effort" name="effort">{% for e in ["low","medium","high","xhigh","max"] %}<option {{ "selected" if prof.effort == e }}>{{ e }}</option>{% endfor %}</select>
+  </details>
+
+  <p class="row" style="margin-top:16px">
+    <button class="btn" type="submit" name="action" value="guardar">Guardar y usar {{ PRESETS[preset].label }}</button>
+    <button class="btn ghost" type="submit" name="action" value="probar">Guardar y probar conexión</button>
+    {% if prof.api_key %}<button class="btn ghost" type="submit" name="action" value="borrar" onclick="return confirm('¿Borrar la key y la configuración de {{ PRESETS[preset].label }} de este equipo?')">Borrar key</button>{% endif %}
+    <span class="busy">Conectando…</span>
+  </p>
+  <p class="small">En uso ahora: <b>{{ llm_label }}</b>. Probar la conexión solo lista modelos: no consume tokens.</p>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,748 @@
+{
+  "story_id": "HU-101",
+  "title": "Recuperación de contraseña",
+  "module": "Autenticación",
+  "model_hash": "639da812022b",
+  "feature_tags": [
+    "auth",
+    "credential",
+    "email",
+    "external_dep",
+    "pii",
+    "token_link",
+    "ui"
+  ],
+  "findings": [],
+  "gaps": [
+    {
+      "id": "credential.policy",
+      "category": "B. Datos",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Cuál es la política de la credencial (longitud mínima/máxima, caracteres obligatorios y permitidos, unicode)?",
+      "why": "Define los negativos y bordes del formulario y el mensaje de error esperado; sin política hay riesgo de seguridad.",
+      "default": "Mínimo 8 y máximo 64 caracteres, al menos 1 mayúscula y 1 número; se aceptan unicode y espacios.",
+      "source": "tag:credential",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "token.expiration",
+      "category": "E. Estados",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Cuánto tiempo es válido el enlace/token y qué ve el usuario si lo usa vencido?",
+      "why": "Sin expiración, un enlace filtrado (email reenviado, bandeja compartida) da acceso indefinido.",
+      "default": "24 horas; al usarlo vencido se muestra 'enlace expirado' con opción de pedir uno nuevo.",
+      "source": "tag:token_link",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "token.invalidation",
+      "category": "E. Estados",
+      "gap_class": "IMPORTANTE",
+      "question": "Al pedir un enlace nuevo, ¿se invalidan los anteriores? ¿El enlace es de un solo uso?",
+      "why": "Define si puede haber varios enlaces activos a la vez (superficie de ataque) y si se puede reusar.",
+      "default": "El último enlace invalida los anteriores y cada enlace es de un solo uso.",
+      "source": "tag:token_link",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "auth.rate_limit",
+      "category": "F. Seguridad",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Hay límite de intentos/solicitudes por usuario o IP? ¿Qué pasa al superarlo?",
+      "why": "Sin límite, el flujo es vector de fuerza bruta o de bombardeo de emails.",
+      "default": "Máximo 3 solicitudes por hora por usuario; a partir de la 3ª se pide captcha.",
+      "source": "tag:auth,token_link",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "auth.enumeration",
+      "category": "F. Seguridad",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Los mensajes de error/confirmación deben ser genéricos para no revelar qué usuarios existen?",
+      "why": "Un mensaje distinto para usuarios inexistentes permite enumerar cuentas.",
+      "default": "Sí: mismo mensaje y mismo tiempo de respuesta exista o no el usuario.",
+      "source": "tag:auth",
+      "status": "covered",
+      "answer": "La HU lo define («Si el email existe»)",
+      "asked": false
+    },
+    {
+      "id": "credential.sessions",
+      "category": "G. Concurrencia",
+      "gap_class": "IMPORTANTE",
+      "question": "Al cambiar la credencial, ¿se cierran las sesiones activas en otros dispositivos?",
+      "why": "Escenario de cuenta comprometida: el cambio debería expulsar al intruso.",
+      "default": "Sí, se invalidan todas las sesiones activas excepto la actual.",
+      "source": "tag:credential",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "account.state",
+      "category": "E. Estados",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Qué pasa si la cuenta está bloqueada, desactivada o pendiente de activación?",
+      "why": "Define si el flujo 'revive' cuentas bloqueadas por seguridad.",
+      "default": "Se muestra el mismo mensaje genérico pero no se ejecuta la acción; la cuenta sigue bloqueada.",
+      "source": "tag:auth",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "external.failure",
+      "category": "C. Errores",
+      "gap_class": "IMPORTANTE",
+      "question": "¿Qué ve el usuario si el servicio externo falla o no responde? ¿Se reintenta?",
+      "why": "Sin definición, un fallo del tercero deja al usuario sin feedback o en un estado inconsistente.",
+      "default": "Mensaje de error genérico con opción de reintentar; no se pierde lo ingresado.",
+      "source": "tag:external_dep",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "context.platform_i18n",
+      "category": "J. Contexto",
+      "gap_class": "MENOR",
+      "question": "¿En qué idiomas se muestra/envía el contenido y qué navegadores/dispositivos se soportan?",
+      "why": "Define el alcance de i18n y de compatibilidad.",
+      "default": "Solo español; Chrome, Firefox y Safari desktop + Chrome móvil.",
+      "source": "tag:ui",
+      "status": "open",
+      "answer": null,
+      "asked": true
+    },
+    {
+      "id": "context.a11y",
+      "category": "J. Contexto",
+      "gap_class": "MENOR",
+      "question": "¿El flujo debe ser navegable por teclado / cumplir algún nivel de accesibilidad?",
+      "why": "Es criterio de 'done' en muchos equipos y define casos de accesibilidad.",
+      "default": "Navegable por teclado con foco visible.",
+      "source": "tag:ui",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.email_ingresado.formato_invalido",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Email ingresado en el formulario de 'Olvidé mi contraseña'» es «Texto sin formato de email»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.email_ingresado.vacio",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Email ingresado en el formulario de 'Olvidé mi contraseña'» es «Campo email vacío»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.password_nueva.vacia",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Nueva contraseña definida al abrir el enlace» es «Contraseña vacía»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.password_nueva.igual_a_la_actual",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Nueva contraseña definida al abrir el enlace» es «Contraseña igual a la actual»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.enlace.alterado",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Estado del enlace de restablecimiento al abrirlo» es «Enlace con el token modificado manualmente»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    },
+    {
+      "id": "choice.expected.login_posterior.con_anterior",
+      "category": "C. Errores",
+      "gap_class": "MENOR",
+      "question": "¿Qué ve el usuario cuando «Contraseña usada para iniciar sesión luego del restablecimiento» es «Login con la contraseña anterior»?",
+      "why": "El comportamiento ante este error no está definido en la HU.",
+      "default": "Se rechaza con un mensaje que explica el error y no cambia el estado del sistema.",
+      "source": "schema:expected",
+      "status": "open",
+      "answer": null,
+      "asked": false
+    }
+  ],
+  "frames": [
+    {
+      "frame_id": "F-1e4f0150",
+      "case_id": "CP-001",
+      "type": "Funcional",
+      "title_hint": "Camino feliz de CA-1",
+      "ac_refs": [
+        "CA-1",
+        "CA-2"
+      ],
+      "bindings": {
+        "email_ingresado": "registrado"
+      },
+      "data": {
+        "email_ingresado": "qa.usuario01@empresa.com"
+      },
+      "expected_hints": [
+        "El sistema muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\" y envía un enlace de restablecimiento al email"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "ac-happy-path",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media; humo → Alta",
+      "smoke": true
+    },
+    {
+      "frame_id": "F-79830713",
+      "case_id": "CP-002",
+      "type": "Funcional",
+      "title_hint": "CA-1 con email_ingresado=no_registrado",
+      "ac_refs": [
+        "CA-1",
+        "CA-2"
+      ],
+      "bindings": {
+        "email_ingresado": "no_registrado"
+      },
+      "data": {
+        "email_ingresado": "no.registrado@empresa.com"
+      },
+      "expected_hints": [
+        "El sistema muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\""
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "each-choice",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Media",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-db6bfdf7",
+      "case_id": "CP-003",
+      "type": "Negativo",
+      "title_hint": "Email ingresado en el formulario de 'Olvidé mi contraseña': Texto sin formato de email",
+      "ac_refs": [
+        "CA-1",
+        "CA-2"
+      ],
+      "bindings": {
+        "email_ingresado": "formato_invalido"
+      },
+      "data": {
+        "email_ingresado": "usuario.sin.arroba"
+      },
+      "expected_hints": [],
+      "supuestos": [
+        "«Texto sin formato de email» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.email_ingresado.formato_invalido)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-3e4e8e84",
+      "case_id": "CP-004",
+      "type": "Negativo",
+      "title_hint": "Email ingresado en el formulario de 'Olvidé mi contraseña': Campo email vacío",
+      "ac_refs": [
+        "CA-1",
+        "CA-2"
+      ],
+      "bindings": {
+        "email_ingresado": "vacio"
+      },
+      "data": {
+        "email_ingresado": "'' (vacío)"
+      },
+      "expected_hints": [],
+      "supuestos": [
+        "«Campo email vacío» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.email_ingresado.vacio)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-4f4eb395",
+      "case_id": "CP-005",
+      "type": "Negativo",
+      "title_hint": "Respuesta ante un usuario/email inexistente (anti-enumeración)",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "El mensaje es idéntico al de un usuario existente y no se envía nada."
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "rule:auth.enumeration",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Alto (regla de F. Seguridad) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-e7587615",
+      "case_id": "CP-006",
+      "type": "Negativo",
+      "title_hint": "Ejecución del flujo con una cuenta bloqueada o desactivada",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "La acción no se ejecuta y la cuenta conserva su estado."
+      ],
+      "supuestos": [
+        "Se muestra el mismo mensaje genérico pero no se ejecuta la acción; la cuenta sigue bloqueada. (ver account.state)"
+      ],
+      "exploratory": false,
+      "origin": "rule:account.state",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Alto (regla de E. Estados) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-2ee485da",
+      "case_id": "CP-007",
+      "type": "No funcional",
+      "title_hint": "Solicitudes repetidas en poco tiempo (rate limiting)",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "Documentar el comportamiento observado ante solicitudes repetidas."
+      ],
+      "supuestos": [
+        "Máximo 3 solicitudes por hora por usuario; a partir de la 3ª se pide captcha. (ver auth.rate_limit)"
+      ],
+      "exploratory": true,
+      "origin": "rule:auth.rate_limit",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo No funcional) × Impacto Alto (regla de F. Seguridad) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-bf34939d",
+      "case_id": "CP-008",
+      "type": "No funcional",
+      "title_hint": "Compatibilidad del flujo en los navegadores soportados",
+      "ac_refs": [
+        "CA-1"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "El flujo principal se completa igual en cada navegador soportado."
+      ],
+      "supuestos": [
+        "Solo español; Chrome, Firefox y Safari desktop + Chrome móvil. (ver context.platform_i18n)"
+      ],
+      "exploratory": false,
+      "origin": "rule:context.platform_i18n",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo No funcional) × Impacto Medio (tipo No funcional en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-8d5966b2",
+      "case_id": "CP-009",
+      "type": "Excepción",
+      "title_hint": "Falla o timeout del servicio externo",
+      "ac_refs": [
+        "CA-2"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "El usuario recibe feedback y el sistema queda en estado consistente."
+      ],
+      "supuestos": [
+        "Mensaje de error genérico con opción de reintentar; no se pierde lo ingresado. (ver external.failure)"
+      ],
+      "exploratory": false,
+      "origin": "rule:external.failure",
+      "probability": "Alta",
+      "impact": "Medio",
+      "priority": "Alta",
+      "risk_reason": "Prob. Alta (tipo Excepción; depende de un servicio externo («servicio externo»)) × Impacto Medio (tipo Excepción en funcionalidad crítica) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-832a9a63",
+      "case_id": "CP-010",
+      "type": "Funcional",
+      "title_hint": "Camino feliz de CA-3",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {
+        "password_nueva": "valida",
+        "enlace": "vigente"
+      },
+      "data": {
+        "password_nueva": "NuevaClave#2026",
+        "enlace": "(enlace recibido en el email del usuario)"
+      },
+      "expected_hints": [
+        "El sistema confirma que la contraseña se actualizó"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "ac-happy-path",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media; humo → Alta",
+      "smoke": true
+    },
+    {
+      "frame_id": "F-c0c4b22b",
+      "case_id": "CP-011",
+      "type": "Negativo",
+      "title_hint": "Nueva contraseña definida al abrir el enlace: Contraseña vacía",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {
+        "enlace": "vigente",
+        "password_nueva": "vacia"
+      },
+      "data": {
+        "enlace": "(enlace recibido en el email del usuario)",
+        "password_nueva": "'' (vacío)"
+      },
+      "expected_hints": [],
+      "supuestos": [
+        "«Contraseña vacía» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.password_nueva.vacia)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-c1cbaf5d",
+      "case_id": "CP-012",
+      "type": "Negativo",
+      "title_hint": "Nueva contraseña definida al abrir el enlace: Contraseña igual a la actual",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {
+        "enlace": "vigente",
+        "password_nueva": "igual_a_la_actual"
+      },
+      "data": {
+        "enlace": "(enlace recibido en el email del usuario)",
+        "password_nueva": "(la contraseña actual del usuario)"
+      },
+      "expected_hints": [],
+      "supuestos": [
+        "«Contraseña igual a la actual» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.password_nueva.igual_a_la_actual)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-357703fa",
+      "case_id": "CP-013",
+      "type": "Negativo",
+      "title_hint": "Estado del enlace de restablecimiento al abrirlo: Enlace con el token modificado manualmente",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {
+        "password_nueva": "valida",
+        "enlace": "alterado"
+      },
+      "data": {
+        "password_nueva": "NuevaClave#2026",
+        "enlace": "(enlace recibido con el token alterado)"
+      },
+      "expected_hints": [
+        "El sistema confirma que la contraseña se actualizó"
+      ],
+      "supuestos": [
+        "«Enlace con el token modificado manualmente» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.enlace.alterado)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-9c750b00",
+      "case_id": "CP-014",
+      "type": "Excepción",
+      "title_hint": "Uso de un enlace/token vencido",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "El enlace vencido es rechazado y no permite completar la acción."
+      ],
+      "supuestos": [
+        "24 horas; al usarlo vencido se muestra 'enlace expirado' con opción de pedir uno nuevo. (ver token.expiration)"
+      ],
+      "exploratory": false,
+      "origin": "rule:token.expiration",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo Excepción) × Impacto Alto (regla de E. Estados) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-3534b477",
+      "case_id": "CP-015",
+      "type": "Excepción",
+      "title_hint": "Reuso de un enlace ya usado y de un enlace anterior al último",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "Solo el último enlace no usado funciona; los demás son rechazados."
+      ],
+      "supuestos": [
+        "El último enlace invalida los anteriores y cada enlace es de un solo uso. (ver token.invalidation)"
+      ],
+      "exploratory": false,
+      "origin": "rule:token.invalidation",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo Excepción) × Impacto Alto (regla de E. Estados) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-adedc505",
+      "case_id": "CP-016",
+      "type": "Excepción",
+      "title_hint": "Sesiones abiertas en otro dispositivo tras el cambio de credencial",
+      "ac_refs": [
+        "CA-3"
+      ],
+      "bindings": {},
+      "data": {},
+      "expected_hints": [
+        "Las otras sesiones quedan invalidadas."
+      ],
+      "supuestos": [
+        "Sí, se invalidan todas las sesiones activas excepto la actual. (ver credential.sessions)"
+      ],
+      "exploratory": false,
+      "origin": "rule:credential.sessions",
+      "probability": "Media",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Media (tipo Excepción) × Impacto Alto (regla de G. Concurrencia) → Alta",
+      "smoke": false
+    },
+    {
+      "frame_id": "F-7d217f72",
+      "case_id": "CP-017",
+      "type": "Funcional",
+      "title_hint": "Camino feliz de CA-4",
+      "ac_refs": [
+        "CA-4"
+      ],
+      "bindings": {
+        "login_posterior": "con_nueva"
+      },
+      "data": {
+        "login_posterior": "(la misma definida en password_nueva)"
+      },
+      "expected_hints": [
+        "El usuario inicia sesión"
+      ],
+      "supuestos": [],
+      "exploratory": false,
+      "origin": "ac-happy-path",
+      "probability": "Baja",
+      "impact": "Alto",
+      "priority": "Alta",
+      "risk_reason": "Prob. Baja (tipo Funcional) × Impacto Alto (tipo Funcional en funcionalidad crítica) → Media; humo → Alta",
+      "smoke": true
+    },
+    {
+      "frame_id": "F-bfe68892",
+      "case_id": "CP-018",
+      "type": "Negativo",
+      "title_hint": "Contraseña usada para iniciar sesión luego del restablecimiento: Login con la contraseña anterior",
+      "ac_refs": [
+        "CA-4"
+      ],
+      "bindings": {
+        "login_posterior": "con_anterior"
+      },
+      "data": {
+        "login_posterior": "(la contraseña actual anterior al restablecimiento)"
+      },
+      "expected_hints": [],
+      "supuestos": [
+        "«Login con la contraseña anterior» se considera inválido aunque la HU no lo dice",
+        "Se rechaza con un mensaje que explica el error y no cambia el estado (ver choice.expected.login_posterior.con_anterior)"
+      ],
+      "exploratory": false,
+      "origin": "error-choice",
+      "probability": "Media",
+      "impact": "Medio",
+      "priority": "Media",
+      "risk_reason": "Prob. Media (tipo Negativo) × Impacto Medio (tipo Negativo en funcionalidad crítica) → Media",
+      "smoke": false
+    }
+  ],
+  "coverage": {
+    "acceptance": [
+      {
+        "ac_id": "CA-1",
+        "text": "El usuario accede a \"Olvidé mi contraseña\" desde la pantalla de login, ingresa su email y el sistema muestra el mensaje \"Si el email existe, recibirás un enlace para restablecer tu contraseña\".",
+        "case_ids": [
+          "CP-001",
+          "CP-002",
+          "CP-003",
+          "CP-004",
+          "CP-005",
+          "CP-006",
+          "CP-007",
+          "CP-008"
+        ],
+        "covered": true,
+        "reason": ""
+      },
+      {
+        "ac_id": "CA-2",
+        "text": "El sistema envía al email un enlace de restablecimiento.",
+        "case_ids": [
+          "CP-001",
+          "CP-002",
+          "CP-003",
+          "CP-004",
+          "CP-009"
+        ],
+        "covered": true,
+        "reason": ""
+      },
+      {
+        "ac_id": "CA-3",
+        "text": "Al abrir el enlace, el usuario define una nueva contraseña y el sistema confirma que se actualizó.",
+        "case_ids": [
+          "CP-010",
+          "CP-011",
+          "CP-012",
+          "CP-013",
+          "CP-014",
+          "CP-015",
+          "CP-016"
+        ],
+        "covered": true,
+        "reason": ""
+      },
+      {
+        "ac_id": "CA-4",
+        "text": "Con la nueva contraseña, el usuario puede iniciar sesión.",
+        "case_ids": [
+          "CP-017",
+          "CP-018"
+        ],
+        "covered": true,
+        "reason": ""
+      }
+    ],
+    "ac_percent": 100.0,
+    "pairs_total": 1,
+    "pairs_covered": 1,
+    "pairs_percent": 100.0,
+    "boundaries_total": 0,
+    "boundaries_covered": 0,
+    "boundaries_percent": 100.0
+  },
+  "mode": "completo"
+}
