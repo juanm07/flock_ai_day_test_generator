@@ -34,11 +34,6 @@ determinista y testeado** (`tbg`), y la salida de la IA solo se acepta si pasa s
 | Extraer los hechos de un reporte de bug, con cita textual | Detectar lagunas y armar las preguntas al PO; rechazar hechos sin cita; clasificar S/P |
 | — | Control de calidad (pasos atómicos, esperados observables, datos concretos, supuestos marcados) |
 
-Cada pieza sigue un método publicado: Category-Partition (Ostrand & Balcer, 1988), pairwise (Kuhn et al., 2004; PICT),
-valores límite (Myers), Requirements Smells (Femmer et al., 2017), Quality User Story (Lucassen et al., 2016), riesgo
-(Amland, 2000), calidad de bug reports (Bettenburg et al., 2008; Chaparro et al., 2017), self-consistency (Wang et al.,
-2023) y *Assured LLM-based SE* (Meta, 2024). Detalle en [Cómo funciona](#cómo-funciona).
-
 ---
 
 ## Empezar en 5 minutos
@@ -139,17 +134,17 @@ casos ◄── control de calidad ◄── redacción (IA, otra IA o persona) 
 Bug ──► hechos con cita textual (IA) ──► citas verificadas ──► faltantes OB/EB/S2R ──► severidad/prioridad por reglas
 ```
 
-| Componente | Referencia | Cómo se usa |
-|---|---|---|
-| Principio rector | Alshahwan et al. 2024, *Assured LLM-Based Software Engineering* (ICSE-InteNSE); TestGen-LLM (FSE 2024) | La salida de la IA se acepta solo si pasa filtros deterministas |
-| Estabilidad | Wang et al. 2023, *Self-Consistency…* (ICLR) | 3 lecturas independientes + voto mayoritario (`tbg consensus`) |
-| Modelo de test | Ostrand & Balcer 1988, *The Category-Partition Method* (CACM 31(6)) | Datos × variantes + restricciones; cada variante inválida es un caso propio |
-| Combinatoria | Kuhn, Wallace & Gallo 2004 (IEEE TSE 30(6)); Czerwonka 2006 (PICT) | Pares cubiertos al 100%, con verificador independiente |
-| Valores límite | Myers, *The Art of Software Testing* | mín-1, mín, mín+1, máx-1, máx, máx+1 calculados |
-| Lint de HU | Femmer et al. 2017, *Requirements Smells* (JSS 123) | Léxico de palabras vagas en español |
-| Calidad de HU | Lucassen et al. 2016, *Quality User Story / AQUSA* (REJ 21) | Formato, objetivo, atomicidad, criterios observables |
-| Riesgo | Amland 2000, *Risk-based testing* (JSS 53(3)) | Prioridad = probabilidad × impacto, justificada por caso |
-| Bugs | Bettenburg et al. 2008 (FSE); Chaparro et al. 2017 (FSE) | Faltantes OB/EB/S2R/ambiente → `[PENDIENTE]` + pregunta |
+| Componente | Cómo se usa |
+|---|---|
+| Principio rector | La salida de la IA se acepta solo si pasa filtros deterministas |
+| Estabilidad | 3 lecturas independientes + voto mayoritario (`tbg consensus`) |
+| Modelo de test | Datos × variantes + restricciones; cada variante inválida es un caso propio |
+| Combinatoria | Pares cubiertos al 100%, con verificador independiente |
+| Valores límite | mín-1, mín, mín+1, máx-1, máx, máx+1 calculados |
+| Lint de HU | Léxico de palabras vagas en español |
+| Calidad de HU | Formato, objetivo, atomicidad, criterios observables |
+| Riesgo | Prioridad = probabilidad × impacto, justificada por caso |
+| Bugs | Faltantes OB/EB/S2R/ambiente → `[PENDIENTE]` + pregunta |
 
 **Garantías, cubiertas por tests**: mismo modelo ⇒ misma suite; ningún caso fuera del diseño; ningún comportamiento
 inventado sin `[SUPUESTO]`; sin límites del PO no hay casos de borde; cobertura recalculada aparte del generador (ese
